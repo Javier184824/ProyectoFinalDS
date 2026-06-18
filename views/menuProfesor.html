@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu del profesor</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: #4B3B8C;
+            display: flex;
+            font-family: sans-serif;
+        }
+
+        /* sidebar */
+        .sidebar {
+            width: 200px;
+            min-height: 100vh;
+            background-color: #EADDFF;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 14px;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .sidebar-perfil {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #BFB7CC;
+            margin-bottom: 4px;
+        }
+
+        .icono-usuario {
+            width: 48px;
+            height: 48px;
+            background-color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* icono de silueta simple con SVG inline */
+        .icono-usuario svg {
+            width: 28px;
+            height: 28px;
+            fill: #6750A4;
+        }
+
+        .sidebar-perfil span {
+            font-size: 0.85rem;
+            color: #1C1B1F;
+        }
+
+        .nav-btn {
+            background-color: #6B5B95;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 0.85rem;
+            text-align: left;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .nav-btn:hover {
+            background-color: #4F378A;
+        }
+
+        .nav-btn.activo {
+            background-color: #4F378A;
+        }
+
+        /* empuja el boton de cerrar sesion al fondo */
+        .sidebar-espaciador {
+            flex: 1;
+        }
+
+        .btn-cerrar-sesion {
+            background-color: #FF383C;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 0.85rem;
+            text-align: left;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .btn-cerrar-sesion:hover {
+            background-color: #cc1f22;
+        }
+
+        /* area principal */
+        .contenido {
+            flex: 1;
+            padding: 32px 28px;
+        }
+
+        .contenido h2 {
+            color: #fff;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        /* lista de tareas */
+        .lista-tareas {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .tarjeta-tarea {
+            background-color: #C9C9C9;
+            border-radius: 10px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .tarjeta-tarea span {
+            font-size: 0.9rem;
+            color: #1C1B1F;
+        }
+
+        .btn-ver {
+            background-color: #316AFB;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 7px 20px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .btn-ver:hover {
+            background-color: #1a53e0;
+        }
+
+        /* barra de titulo con boton de accion */
+        .barra-titulo {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .barra-titulo h2 { margin-bottom: 0; }
+
+        .btn-nuevo {
+            background-color: #34C759;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .btn-nuevo:hover { background-color: #28a745; }
+
+        .btn-editar {
+            background-color: #6B5B95;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 7px 18px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .btn-editar:hover { background-color: #4F378A; }
+
+        .acciones-tarjeta { display: flex; gap: 8px; }
+
+        /* estado vacio */
+        .sin-tareas {
+            color: #BFB7CC;
+            font-size: 0.88rem;
+            margin-top: 8px;
+        }
+
+        /* spinner de carga */
+        .cargando {
+            color: #BFB7CC;
+            font-size: 0.88rem;
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-perfil">
+            <div class="icono-usuario">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+                </svg>
+            </div>
+            <span id="nombreUsuario">Usuario</span>
+        </div>
+
+        <button class="nav-btn activo" id="btnCursos">Cursos</button>
+        <button class="nav-btn" id="btnCrearTarea">Crear tarea</button>
+
+        <div class="sidebar-espaciador"></div>
+
+        <button class="btn-cerrar-sesion" id="btnCerrarSesion">Cerrar sesion</button>
+    </aside>
+
+    <main class="contenido">
+        <section id="seccionCursos">
+            <div class="barra-titulo">
+                <h2>Mis cursos</h2>
+                <button class="btn-nuevo" id="btnNuevoCurso">+ Nuevo curso</button>
+            </div>
+
+            <div class="lista-cursos" id="listaCursos">
+                <p class="cargando" id="estadoCarga">Cargando cursos...</p>
+            </div>
+
+            <!-- panel de tareas del curso seleccionado -->
+            <div id="panelTareas" style="display:none; margin-top:28px;">
+                <h2 id="tituloTareas">Tareas</h2>
+                <div class="lista-tareas" id="listaTareas">
+                    <p class="cargando">Cargando tareas...</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/config.js"></script>
+    <script>
+        const BASE = window.API_BASE;
+
+        // muestra el nombre del usuario guardado en sessionStorage
+        const datosUsuario = JSON.parse(sessionStorage.getItem('usuario') || '{}');
+        if (datosUsuario.nombre) {
+            document.getElementById('nombreUsuario').textContent = datosUsuario.nombre;
+        }
+
+        // redirige al login si no hay sesion
+        if (!datosUsuario.idUsuario) {
+            window.location.href = BASE + '/login';
+        }
+
+        // navegacion del sidebar
+        document.getElementById('btnCrearTarea').addEventListener('click', () => {
+            window.location.href = BASE + '/crearTarea';
+        });
+
+        // dibuja la lista de cursos del profesor
+        function renderCursos(cursos) {
+            const lista = document.getElementById('listaCursos');
+            lista.innerHTML = '';
+
+            if (!cursos || cursos.length === 0) {
+                lista.innerHTML = '<p class="sin-tareas">No hay cursos. Cree uno con el boton de arriba.</p>';
+                return;
+            }
+
+            cursos.forEach(curso => {
+                const tarjeta = document.createElement('div');
+                tarjeta.className = 'tarjeta-tarea';
+
+                const nombre = document.createElement('span');
+                nombre.textContent = curso.nombreCurso;
+
+                const btn = document.createElement('button');
+                btn.className = 'btn-ver';
+                btn.textContent = 'Ver tareas';
+                btn.onclick = () => cargarTareas(curso);
+
+                tarjeta.appendChild(nombre);
+                tarjeta.appendChild(btn);
+                lista.appendChild(tarjeta);
+            });
+        }
+
+        // dibuja las tareas de un curso, con acciones de revisar y editar
+        function renderTareas(tareas, curso) {
+            const lista = document.getElementById('listaTareas');
+            lista.innerHTML = '';
+
+            if (!tareas || tareas.length === 0) {
+                lista.innerHTML = '<p class="sin-tareas">Este curso no tiene tareas.</p>';
+                return;
+            }
+
+            tareas.forEach(tarea => {
+                const tarjeta = document.createElement('div');
+                tarjeta.className = 'tarjeta-tarea';
+
+                const nombre = document.createElement('span');
+                nombre.textContent = tarea.nombreTarea;
+
+                const acciones = document.createElement('div');
+                acciones.className = 'acciones-tarjeta';
+
+                const btnVer = document.createElement('button');
+                btnVer.className = 'btn-ver';
+                btnVer.textContent = 'Entregas';
+                btnVer.onclick = () => {
+                    window.location.href = BASE + '/entregas?idTarea=' + tarea.idTarea +
+                        '&nombre=' + encodeURIComponent(tarea.nombreTarea) +
+                        '&esGrupal=' + (tarea.esGrupal ? '1' : '0');
+                };
+
+                const btnEditar = document.createElement('button');
+                btnEditar.className = 'btn-editar';
+                btnEditar.textContent = 'Editar';
+                btnEditar.onclick = () => {
+                    const fecha = (tarea.fechaEntrega || '').slice(0, 10);
+                    window.location.href = BASE + '/crearTarea?idTarea=' + tarea.idTarea +
+                        '&idCurso=' + curso.idCurso +
+                        '&nombre=' + encodeURIComponent(tarea.nombreTarea || '') +
+                        '&descripcion=' + encodeURIComponent(tarea.descripcion || '') +
+                        '&fechaEntrega=' + encodeURIComponent(fecha);
+                };
+
+                acciones.appendChild(btnVer);
+                acciones.appendChild(btnEditar);
+
+                tarjeta.appendChild(nombre);
+                tarjeta.appendChild(acciones);
+                lista.appendChild(tarjeta);
+            });
+        }
+
+        async function cargarCursos() {
+            const lista = document.getElementById('listaCursos');
+            lista.innerHTML = '<p class="cargando">Cargando cursos...</p>';
+
+            try {
+                const response = await fetch(BASE + '/api/cursos', {
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (!response.ok) {
+                    lista.innerHTML = '<p class="sin-tareas">Error al cargar los cursos.</p>';
+                    return;
+                }
+
+                const data = await response.json();
+                renderCursos(data.cursos || []);
+
+            } catch (error) {
+                lista.innerHTML = '<p class="sin-tareas">Error de conexion.</p>';
+            }
+        }
+
+        async function cargarTareas(curso) {
+            const panel = document.getElementById('panelTareas');
+            const lista = document.getElementById('listaTareas');
+            panel.style.display = 'block';
+            document.getElementById('tituloTareas').textContent = 'Tareas de ' + curso.nombreCurso;
+            lista.innerHTML = '<p class="cargando">Cargando tareas...</p>';
+
+            try {
+                const response = await fetch(BASE + '/api/tareas?idCurso=' + curso.idCurso, {
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (!response.ok) {
+                    lista.innerHTML = '<p class="sin-tareas">Error al cargar las tareas.</p>';
+                    return;
+                }
+
+                const data = await response.json();
+                renderTareas(data.tareas || [], curso);
+
+            } catch (error) {
+                lista.innerHTML = '<p class="sin-tareas">Error de conexion.</p>';
+            }
+        }
+
+        // crea un curso nuevo pidiendo el nombre al profesor
+        document.getElementById('btnNuevoCurso').addEventListener('click', async () => {
+            const nombreCurso = prompt('Nombre del nuevo curso:');
+            if (!nombreCurso || !nombreCurso.trim()) return;
+
+            try {
+                const response = await fetch(BASE + '/api/cursos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nombreCurso: nombreCurso.trim() })
+                });
+
+                const data = await response.json().catch(() => null);
+
+                if (!response.ok) {
+                    alert((data && data.error) ? data.error : 'Error al crear el curso.');
+                    return;
+                }
+
+                cargarCursos();
+
+            } catch (error) {
+                alert('Error de conexion. Intente de nuevo.');
+            }
+        });
+
+        document.getElementById('btnCerrarSesion').addEventListener('click', () => {
+            sessionStorage.removeItem('usuario');
+            window.location.href = BASE + '/login';
+        });
+
+        // carga inicial
+        cargarCursos();
+    </script>
+</body>
+</html>

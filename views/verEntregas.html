@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entregas</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            min-height: 100vh;
+            background-color: #4B3B8C;
+            display: flex;
+            font-family: sans-serif;
+        }
+
+        .sidebar {
+            width: 200px;
+            min-height: 100vh;
+            background-color: #EADDFF;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 14px;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .sidebar-perfil {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #BFB7CC;
+            margin-bottom: 4px;
+        }
+
+        .icono-usuario {
+            width: 48px;
+            height: 48px;
+            background-color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icono-usuario svg { width: 28px; height: 28px; fill: #6750A4; }
+        .sidebar-perfil span { font-size: 0.85rem; color: #1C1B1F; }
+
+        .nav-btn {
+            background-color: #6B5B95;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 0.85rem;
+            text-align: left;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .nav-btn:hover { background-color: #4F378A; }
+
+        .sidebar-espaciador { flex: 1; }
+
+        .btn-cerrar-sesion {
+            background-color: #FF383C;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 0.85rem;
+            text-align: left;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .btn-cerrar-sesion:hover { background-color: #cc1f22; }
+
+        /* contenido */
+        .contenido {
+            flex: 1;
+            padding: 32px 28px;
+        }
+
+        .contenido-header {
+            margin-bottom: 20px;
+        }
+
+        .contenido-header h2 {
+            color: #fff;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .contenido-header p {
+            color: #BFB7CC;
+            font-size: 0.82rem;
+            margin-top: 4px;
+        }
+
+        /* card con la tabla de entregas */
+        .card-entregas {
+            background-color: #EADDFF;
+            border-radius: 14px;
+            overflow: hidden;
+            max-width: 720px;
+        }
+
+        .card-entregas-header {
+            background-color: #6750A4;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-entregas-header h3 {
+            color: #fff;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .badge-total {
+            background-color: #EADDFF;
+            color: #6750A4;
+            border-radius: 20px;
+            padding: 3px 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* lista de entregas */
+        .lista-entregas {
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .fila-entrega {
+            background-color: #C9C9C9;
+            border-radius: 10px;
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .fila-entrega .info {
+            flex: 1;
+        }
+
+        .fila-entrega .nombre-est {
+            font-size: 0.88rem;
+            color: #1C1B1F;
+            font-weight: 500;
+        }
+
+        .fila-entrega .meta {
+            font-size: 0.75rem;
+            color: #575757;
+            margin-top: 2px;
+        }
+
+        .badge-nota {
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .badge-nota.sin-calificar {
+            background-color: #BFB7CC;
+            color: #4B3B8C;
+        }
+
+        .badge-nota.calificado {
+            background-color: #34C759;
+            color: #fff;
+        }
+
+        .btn-revisar {
+            background-color: #316AFB;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 7px 16px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .btn-revisar:hover { background-color: #1a53e0; }
+
+        .sin-entregas {
+            color: #6B6B6B;
+            font-size: 0.85rem;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        .cargando {
+            color: #6B6B6B;
+            font-size: 0.85rem;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        .card-pie {
+            padding: 10px 16px 16px;
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .btn-atras {
+            background-color: #316AFB;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 22px;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .btn-atras:hover { background-color: #1a53e0; }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-perfil">
+            <div class="icono-usuario">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+                </svg>
+            </div>
+            <span id="nombreUsuario">Usuario</span>
+        </div>
+
+        <button class="nav-btn" id="btnCursos">Cursos</button>
+        <button class="nav-btn" id="btnCrearTarea">Crear tarea</button>
+
+        <div class="sidebar-espaciador"></div>
+        <button class="btn-cerrar-sesion" id="btnCerrarSesion">Cerrar sesion</button>
+    </aside>
+
+    <main class="contenido">
+        <div class="contenido-header">
+            <h2 id="tituloPantalla">Entregas</h2>
+            <p id="subtitulo"></p>
+        </div>
+
+        <div class="card-entregas">
+            <div class="card-entregas-header">
+                <h3>Estudiantes que han entregado</h3>
+                <span class="badge-total" id="badgeTotal">0</span>
+            </div>
+
+            <div class="lista-entregas" id="listaEntregas">
+                <p class="cargando">Cargando entregas...</p>
+            </div>
+
+            <div class="card-pie" style="gap:10px">
+                <button class="btn-atras" id="btnAtras">Atras</button>
+                <button class="btn-grupos" id="btnGrupos" style="display:none;background-color:#6B5B95;color:#fff;border:none;border-radius:20px;padding:8px 20px;font-size:0.85rem;cursor:pointer;">
+                    Gestionar grupos
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/config.js"></script>
+    <script>
+        const BASE = window.API_BASE;
+
+        const usuario = JSON.parse(sessionStorage.getItem('usuario') || '{}');
+        if (!usuario.idUsuario) window.location.href = BASE + '/login';
+        if (usuario.nombre) document.getElementById('nombreUsuario').textContent = usuario.nombre;
+
+        // navegacion del sidebar y boton atras
+        document.getElementById('btnCursos').addEventListener('click', () => {
+            window.location.href = BASE + '/menuProfesor';
+        });
+        document.getElementById('btnCrearTarea').addEventListener('click', () => {
+            window.location.href = BASE + '/crearTarea';
+        });
+        document.getElementById('btnAtras').addEventListener('click', () => {
+            window.location.href = BASE + '/menuProfesor';
+        });
+
+        // leer idTarea y nombre desde URL
+        const params  = new URLSearchParams(window.location.search);
+        const idTarea = params.get('idTarea');
+        const nombre  = params.get('nombre') || 'Tarea';
+
+        document.getElementById('tituloPantalla').textContent = nombre;
+        document.getElementById('subtitulo').textContent = 'Entregas recibidas';
+
+        function renderEntregas(entregas) {
+            const lista = document.getElementById('listaEntregas');
+            document.getElementById('badgeTotal').textContent = entregas.length;
+            lista.innerHTML = '';
+
+            if (entregas.length === 0) {
+                lista.innerHTML = '<p class="sin-entregas">Aun no hay entregas para esta tarea.</p>';
+                return;
+            }
+
+            entregas.forEach(e => {
+                const fila = document.createElement('div');
+                fila.className = 'fila-entrega';
+
+                const info = document.createElement('div');
+                info.className = 'info';
+
+                const nombre = document.createElement('div');
+                nombre.className = 'nombre-est';
+                nombre.textContent = e.estudiante || 'Estudiante';
+
+                const meta = document.createElement('div');
+                meta.className = 'meta';
+                const fecha = e.fechaCreacion ? new Date(e.fechaCreacion).toLocaleString('es-CR') : '';
+                meta.textContent = 'Entregado: ' + fecha + (e.version ? '  |  v' + e.version : '');
+
+                info.appendChild(nombre);
+                info.appendChild(meta);
+
+                const badge = document.createElement('span');
+                badge.className = 'badge-nota ' + (e.nota !== null && e.nota !== undefined ? 'calificado' : 'sin-calificar');
+                badge.textContent = (e.nota !== null && e.nota !== undefined) ? e.nota + ' pts' : 'Sin calificar';
+
+                const btn = document.createElement('button');
+                btn.className = 'btn-revisar';
+                btn.textContent = 'Revisar';
+                btn.onclick = () => {
+                    window.location.href = BASE + '/revisarEntrega?idEntrega=' + e.idEntrega +
+                        '&idTarea=' + idTarea +
+                        '&estudiante=' + encodeURIComponent(e.estudiante || '');
+                };
+
+                fila.appendChild(info);
+                fila.appendChild(badge);
+                fila.appendChild(btn);
+                lista.appendChild(fila);
+            });
+        }
+
+        async function cargarEntregas() {
+            if (!idTarea) {
+                document.getElementById('listaEntregas').innerHTML = '<p class="sin-entregas">No se especifico una tarea.</p>';
+                return;
+            }
+
+            try {
+                const response = await fetch(BASE + '/api/tareas/' + idTarea + '/entregas', {
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const data = await response.json().catch(() => null);
+
+                if (!response.ok) {
+                    document.getElementById('listaEntregas').innerHTML = '<p class="sin-entregas">Error al cargar las entregas.</p>';
+                    return;
+                }
+
+                renderEntregas(data.entregas || data || []);
+
+            } catch (error) {
+                document.getElementById('listaEntregas').innerHTML = '<p class="sin-entregas">Error de conexion.</p>';
+            }
+        }
+
+        document.getElementById('btnCerrarSesion').addEventListener('click', () => {
+            sessionStorage.removeItem('usuario');
+            window.location.href = BASE + '/login';
+        });
+        
+        const esGrupal = params.get('esGrupal');
+        if (esGrupal === '1') {
+            document.getElementById('btnGrupos').style.display = 'inline-block';
+        }
+
+        document.getElementById('btnGrupos').addEventListener('click', () => {
+            window.location.href = BASE + '/gestionGrupos?idTarea=' + idTarea +
+                '&nombre=' + encodeURIComponent(nombre);
+        });
+
+        cargarEntregas();
+    </script>
+</body>
+</html>

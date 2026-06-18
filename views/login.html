@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio de sesion</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            min-height: 100vh;
+            background-color: #4B3B8C;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: sans-serif;
+            gap: 12px;
+        }
+
+        /* mensaje de confirmacion (cuenta creada, contrasena cambiada) */
+        .aviso {
+            background-color: #BFB7CC;
+            color: #1C1B1F;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 0.85rem;
+            display: none;
+        }
+
+        .tarjeta {
+            background-color: #EADDFF;
+            border-radius: 16px;
+            width: 380px;
+            overflow: hidden;
+        }
+
+        .tarjeta-header {
+            background-color: #6750A4;
+            text-align: center;
+            padding: 14px 0;
+        }
+
+        .tarjeta-header h1 {
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .tarjeta-cuerpo {
+            padding: 24px 28px 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .campo label {
+            display: block;
+            font-size: 0.85rem;
+            color: #1C1B1F;
+            margin-bottom: 4px;
+        }
+
+        .campo input {
+            width: 100%;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            background-color: #fff;
+            font-size: 0.9rem;
+            color: #1C1B1F;
+            outline: none;
+        }
+
+        .campo input:focus {
+            box-shadow: 0 0 0 2px #6750A4;
+        }
+
+        .enlaces {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 28px 8px;
+            margin-top: 4px;
+        }
+
+        .enlaces a {
+            font-size: 0.78rem;
+            color: #316AFB;
+            text-decoration: none;
+        }
+
+        .enlaces a:hover { text-decoration: underline; }
+
+        .tarjeta-pie {
+            padding: 4px 28px 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-ingresar {
+            background-color: #34C759;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 32px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .btn-ingresar:hover { background-color: #28a745; }
+
+        .mensaje-error {
+            display: none;
+            color: #FF383C;
+            font-size: 0.78rem;
+            text-align: center;
+            padding: 0 28px 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="aviso" id="aviso"></div>
+
+    <div class="tarjeta">
+        <div class="tarjeta-header">
+            <h1>Inicio de sesion</h1>
+        </div>
+
+        <div class="tarjeta-cuerpo">
+            <div class="campo">
+                <label for="inputNombreUsuario">Correo</label>
+                <input type="text" id="inputCorreo" name="correo" autocomplete="email">
+            </div>
+            <div class="campo">
+                <label for="inputContrasena">Contraseña</label>
+                <input type="password" id="inputContrasena" name="contrasena" autocomplete="current-password">
+            </div>
+        </div>
+
+        <div class="enlaces">
+            <a href="forgot">Olvide mi contrasena</a>
+            <a href="register">Crear cuenta</a>
+        </div>
+
+        <p class="mensaje-error" id="mensajeError"></p>
+
+        <div class="tarjeta-pie">
+            <button type="button" class="btn-ingresar" id="buttonIniciarSesion">Ingresar</button>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script>
+        const BASE = window.API_BASE;
+
+        // mostrar aviso si viene de otra pantalla (cuenta creada, contrasena cambiada)
+        const params = new URLSearchParams(window.location.search);
+        const aviso  = document.getElementById('aviso');
+        if (params.get('cuentaCreada')) {
+            aviso.textContent = 'Cuenta creada exitosamente';
+            aviso.style.display = 'block';
+        } else if (params.get('contrasenaCambiada')) {
+            aviso.textContent = 'Contrasena cambiada exitosamente';
+            aviso.style.display = 'block';
+        }
+
+        document.getElementById('buttonIniciarSesion').addEventListener('click', async () => {
+            const correo = document.getElementById('inputCorreo').value.trim();
+            const contrasena    = document.getElementById('inputContrasena').value.trim();
+            const mensajeError  = document.getElementById('mensajeError');
+
+            mensajeError.style.display = 'none';
+
+            if (!correo || !contrasena) {
+                mensajeError.textContent = 'Por favor, complete todos los campos.';
+                mensajeError.style.display = 'block';
+                return;
+            }
+
+            try {
+                const response = await fetch(BASE + '/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ correo, contrasena })
+                });
+
+                const data = await response.json().catch(() => null);
+
+                if (!response.ok) {
+                    const msg = data && data.error ? data.error : 'Credenciales incorrectas.';
+                    mensajeError.textContent = msg;
+                    mensajeError.style.display = 'block';
+                    return;
+                }
+
+                sessionStorage.setItem('usuario', JSON.stringify({
+                    idUsuario: data.idUsuario,
+                    nombre:    data.nombre,
+                    rol:       data.rol,
+                    token:     data.token
+                }));
+
+                if (data.rol === 'PROFESOR') {
+                    window.location.href = BASE + '/menuProfesor';
+                } else {
+                    window.location.href = BASE + '/menuEstudiante';
+                }
+
+            } catch (error) {
+                mensajeError.textContent = 'Error de conexión. Intente de nuevo.';
+                mensajeError.style.display = 'block';
+            }
+        });
+
+        // permitir Enter para enviar
+        document.getElementById('inputContrasena').addEventListener('keydown', e => {
+            if (e.key === 'Enter') document.getElementById('buttonIniciarSesion').click();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de cuenta</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            min-height: 100vh;
+            background-color: #4B3B8C;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: sans-serif;
+            gap: 12px;
+        }
+
+        .tarjeta {
+            background-color: #EADDFF;
+            border-radius: 16px;
+            width: 380px;
+            overflow: hidden;
+        }
+
+        .tarjeta-header {
+            background-color: #6750A4;
+            text-align: center;
+            padding: 14px 0;
+        }
+
+        .tarjeta-header h1 {
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .tarjeta-cuerpo {
+            padding: 24px 28px 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .campo label {
+            display: block;
+            font-size: 0.85rem;
+            color: #1C1B1F;
+            margin-bottom: 4px;
+        }
+
+        .campo input[type="text"],
+        .campo input[type="password"] {
+            width: 100%;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            background-color: #fff;
+            font-size: 0.9rem;
+            color: #1C1B1F;
+            outline: none;
+        }
+
+        .campo input[type="text"]:focus,
+        .campo input[type="password"]:focus {
+            box-shadow: 0 0 0 2px #6750A4;
+        }
+
+        /* Radio buttons de rol */
+        .campo-rol {
+            display: flex;
+            gap: 20px;
+            margin-top: 2px;
+        }
+
+        .campo-rol label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            color: #1C1B1F;
+            cursor: pointer;
+        }
+
+        .campo-rol input[type="radio"] {
+            accent-color: #6750A4;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .mensaje-error {
+            display: none;
+            color: #FF383C;
+            font-size: 0.78rem;
+            text-align: center;
+            padding: 0 28px 10px;
+        }
+
+        .tarjeta-pie {
+            padding: 4px 28px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tarjeta-pie a {
+            font-size: 0.78rem;
+            color: #316AFB;
+            text-decoration: none;
+        }
+
+        .tarjeta-pie a:hover { text-decoration: underline; }
+
+        .btn-registrarse {
+            background-color: #34C759;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 32px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .btn-registrarse:hover { background-color: #28a745; }
+    </style>
+</head>
+<body>
+
+    <div class="tarjeta">
+        <div class="tarjeta-header">
+            <h1>Registro de cuenta</h1>
+        </div>
+
+        <div class="tarjeta-cuerpo">
+            <div class="campo">
+                <label for="inputCorreo">Correo</label>
+                <input type="text" id="inputCorreo" name="correo" autocomplete="email">
+            </div>
+            <div class="campo">
+                <label for="inputNombre">Nombre</label>
+                <input type="text" id="inputNombre" name="nombre" autocomplete="name">
+            </div>
+            <div class="campo">
+                <label for="inputNombreUsuario">Nombre de usuario</label>
+                <input type="text" id="inputNombreUsuario" name="nombreUsuario" autocomplete="username">
+            </div>
+            <div class="campo">
+                <label for="inputContrasena">Contraseña</label>
+                <input type="password" id="inputContrasena" name="contrasena" autocomplete="new-password">
+            </div>
+            <div class="campo">
+                <label>Rol</label>
+                <div class="campo-rol">
+                    <label>
+                        <input type="radio" id="radioButtonEstudiante" name="rol" value="ESTUDIANTE" checked>
+                        Estudiante
+                    </label>
+                    <label>
+                        <input type="radio" id="radioButtonProfesor" name="rol" value="PROFESOR">
+                        Profesor
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <p class="mensaje-error" id="mensajeError"></p>
+
+        <div class="tarjeta-pie">
+            <a href="login">Ya tengo cuenta</a>
+            <button type="button" class="btn-registrarse" id="buttonRegistrarse">Registrarse</button>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script>
+        const BASE = window.API_BASE;
+        const buttonRegistrarse = document.getElementById('buttonRegistrarse');
+        const mensajeError = document.getElementById('mensajeError');
+
+        buttonRegistrarse.addEventListener('click', async () => {
+            const correo = document.getElementById('inputCorreo').value.trim();
+            const nombre = document.getElementById('inputNombre').value.trim();
+            const nombreUsuario = document.getElementById('inputNombreUsuario').value.trim();
+            const contrasena = document.getElementById('inputContrasena').value.trim();
+            const rol = document.querySelector('input[name="rol"]:checked').value;
+
+            mensajeError.style.display = 'none';
+
+            if (!correo || !nombre || !nombreUsuario || !contrasena) {
+                mensajeError.textContent = 'Por favor, complete todos los campos.';
+                mensajeError.style.display = 'block';
+                return;
+            }
+
+            console.log("Datos a enviar:", { correo, nombre, nombreUsuario, rol });
+
+            try {
+                const response = await fetch(BASE + '/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ correo, nombre, nombreUsuario, contrasena, rol })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    const msg = data && data.error ? data.error : 'Hubo un error al registrarse.';
+                    mensajeError.textContent = msg;
+                    mensajeError.style.display = 'block';
+                    return;
+                }
+
+                // tras registrar, volvemos al login con el aviso de cuenta creada
+                window.location.href = BASE + '/login?cuentaCreada=1';
+
+            } catch (error) {
+                mensajeError.textContent = 'Error de conexión. Intente de nuevo.';
+                mensajeError.style.display = 'block';
+            }
+        });
+
+        // permitir Enter para enviar
+        document.getElementById('inputContrasena').addEventListener('keydown', e => {
+            if (e.key === 'Enter') document.getElementById('buttonRegistrarse').click();
+        });
+    </script>
+</body>
+</html>
