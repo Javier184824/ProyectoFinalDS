@@ -29,7 +29,7 @@ class EntregaController
 
         $data = json_decode(file_get_contents('php://input'), true);
 
-        $campos = ['idGrupoTrabajo', 'idTarea', 'idArchivoP', 'fechaCreacion', 'version', 'nota'];
+        $campos = ['idGrupoTrabajo', 'idTarea', 'idArchivoP', 'fechaCreacion', 'version', 'nota', 'contenido'];
 
         foreach ($campos as $campo) {
             if (!isset($data[$campo]) || $data[$campo] === '') {
@@ -51,6 +51,7 @@ class EntregaController
                 (string) $data['fechaCreacion'],
                 (int) $data['version'],
                 (float) $data['nota'],
+                $data['contenido'] ?? null, 
                 $comentarioProfesor
             );
 

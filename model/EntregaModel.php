@@ -11,13 +11,13 @@ class EntregaModel
         $this->pdo = Database::getInstance()->getConnection();
     }
 
-    public function crearEntrega(string $idUsuario, int $idGrupoTrabajo, int $idTarea, int $idArchivoP, string $fechaCreacion, int $version, float $nota, ?string $comentarioProfesor): void{
+    public function crearEntrega(string $idUsuario, int $idGrupoTrabajo, int $idTarea, int $idArchivoP, string $fechaCreacion, int $version, float $nota, ?string $contenido, ?string $comentarioProfesor): void{
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $stmtEntrega = $this->pdo->prepare("
-            INSERT INTO Entrega (idUsuario, idGrupoTrabajo, idTarea, idArchivoP, fechaCreacion, version, nota, comentarioProfesor)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO Entrega (idUsuario, idGrupoTrabajo, idTarea, idArchivoP, fechaCreacion, version, nota, comentarioProfesor, contenido)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
-        $stmtEntrega->execute([$idUsuario, $idGrupoTrabajo, $idTarea, $idArchivoP, $fechaCreacion, $version, $nota, $comentarioProfesor]);
+        $stmtEntrega->execute([$idUsuario, $idGrupoTrabajo, $idTarea, $idArchivoP, $fechaCreacion, $version, $nota, $comentarioProfesor, $contenido]);
     }
 
     // lista las entregas de una tarea con nombre del estudiante y del archivo
