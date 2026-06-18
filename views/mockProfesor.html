@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mock Profesor - Prueba de pantallas</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: sans-serif;
+            background-color: #1D192B;
+            color: #EADDFF;
+            min-height: 100vh;
+        }
+
+        .mock-nav {
+            background-color: #0d0b14;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #6750A4;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .mock-nav span { font-size: 0.78rem; color: #BFB7CC; margin-right: 4px; }
+
+        .mock-btn {
+            background-color: #6750A4; color: #fff;
+            border: none; border-radius: 20px;
+            padding: 6px 14px; font-size: 0.78rem; cursor: pointer;
+        }
+
+        .mock-btn:hover { background-color: #4F378A; }
+        .mock-btn.activo { background-color: #34C759; }
+
+        .pantalla { display: none; min-height: calc(100vh - 46px); }
+        .pantalla.visible { display: flex; }
+
+        /* ── estilos compartidos ── */
+        .bg { background-color: #4B3B8C; flex: 1; display: flex; }
+
+        .sidebar {
+            width: 200px; min-height: calc(100vh - 46px);
+            background-color: #EADDFF;
+            display: flex; flex-direction: column;
+            padding: 20px 14px; gap: 10px; flex-shrink: 0;
+        }
+
+        .sidebar-perfil {
+            display: flex; flex-direction: column; align-items: center;
+            gap: 6px; padding-bottom: 14px;
+            border-bottom: 1px solid #BFB7CC; margin-bottom: 4px;
+        }
+
+        .icono-usuario {
+            width: 48px; height: 48px; background-color: #fff;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        }
+
+        .icono-usuario svg { width: 28px; height: 28px; fill: #6750A4; }
+        .sidebar-perfil span { font-size: 0.85rem; color: #1C1B1F; }
+
+        .nav-btn {
+            background-color: #6B5B95; color: #fff; border: none;
+            border-radius: 8px; padding: 10px 12px; font-size: 0.85rem;
+            text-align: left; cursor: pointer; width: 100%;
+        }
+
+        .nav-btn:hover, .nav-btn.activo { background-color: #4F378A; }
+        .sidebar-espaciador { flex: 1; }
+
+        .btn-cerrar-sesion {
+            background-color: #FF383C; color: #fff; border: none;
+            border-radius: 8px; padding: 10px 12px; font-size: 0.85rem;
+            text-align: left; cursor: pointer; width: 100%;
+        }
+
+        .contenido { flex: 1; padding: 28px 24px; overflow-y: auto; }
+        .contenido h2 { color: #fff; font-size: 1.3rem; font-weight: 600; margin-bottom: 18px; }
+        .contenido-header { margin-bottom: 18px; }
+        .contenido-header h2 { margin-bottom: 4px; }
+        .contenido-header p { color: #BFB7CC; font-size: 0.82rem; }
+
+        .card {
+            background-color: #EADDFF; border-radius: 14px;
+            overflow: hidden; max-width: 700px; width: 100%;
+        }
+
+        .card-full { max-width: 100%; }
+
+        .card-header {
+            background-color: #6750A4; padding: 11px 18px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .card-header h3 { color: #fff; font-size: 0.92rem; font-weight: 600; }
+
+        .card-cuerpo { padding: 12px 16px; display: flex; flex-direction: column; gap: 8px; }
+
+        .fila-item {
+            background-color: #C9C9C9; border-radius: 10px;
+            padding: 11px 14px; display: flex; align-items: center; gap: 10px;
+        }
+
+        .fila-item .info { flex: 1; }
+        .fila-item .info .titulo { font-size: 0.88rem; color: #1C1B1F; font-weight: 500; }
+        .fila-item .info .meta { font-size: 0.73rem; color: #575757; margin-top: 2px; }
+
+        .badge-total {
+            background-color: #EADDFF; color: #6750A4;
+            border-radius: 20px; padding: 3px 10px;
+            font-size: 0.74rem; font-weight: 600;
+        }
+
+        .badge-nota {
+            border-radius: 20px; padding: 4px 12px;
+            font-size: 0.74rem; font-weight: 600; flex-shrink: 0;
+        }
+
+        .badge-nota.sin { background-color: #BFB7CC; color: #4B3B8C; }
+        .badge-nota.ok  { background-color: #34C759; color: #fff; }
+
+        .btn-ver {
+            background-color: #316AFB; color: #fff; border: none;
+            border-radius: 20px; padding: 7px 18px; font-size: 0.8rem; cursor: pointer;
+        }
+
+        .btn-revisar {
+            background-color: #316AFB; color: #fff; border: none;
+            border-radius: 20px; padding: 7px 14px; font-size: 0.78rem;
+            cursor: pointer; flex-shrink: 0;
+        }
+
+        .card-pie {
+            padding: 10px 16px 14px;
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        .btn-atras {
+            background-color: #316AFB; color: #fff; border: none;
+            border-radius: 20px; padding: 8px 20px; font-size: 0.83rem; cursor: pointer;
+        }
+
+        .btn-grupos {
+            background-color: #6B5B95; color: #fff; border: none;
+            border-radius: 20px; padding: 8px 20px; font-size: 0.83rem; cursor: pointer;
+        }
+
+        /* crear tarea */
+        .card-form { max-width: 620px; }
+
+        .campo { display: flex; flex-direction: column; gap: 4px; }
+        .campo label { font-size: 0.84rem; color: #1C1B1F; }
+
+        .campo input[type="text"],
+        .campo input[type="date"],
+        .campo textarea {
+            padding: 8px 12px; border: none; border-radius: 8px;
+            background-color: #fff; font-size: 0.88rem; color: #1C1B1F;
+            outline: none; font-family: inherit;
+        }
+
+        .campo textarea { resize: vertical; min-height: 70px; }
+
+        .campo-check { display: flex; align-items: center; gap: 10px; font-size: 0.87rem; color: #1C1B1F; }
+        .campo-check input { accent-color: #6750A4; width: 16px; height: 16px; }
+
+        /* bloque grupo en crear tarea */
+        .bloque-grupo {
+            background-color: #BFB7CC; border-radius: 10px;
+            padding: 10px 12px; display: flex; flex-direction: column; gap: 7px;
+        }
+
+        .bloque-grupo-header { display: flex; align-items: center; gap: 8px; }
+
+        .bloque-grupo-header input {
+            flex: 1; padding: 6px 10px; border: none; border-radius: 6px;
+            background-color: #fff; font-size: 0.86rem; outline: none;
+        }
+
+        .btn-quitar-grupo {
+            background-color: #FF383C; color: #fff; border: none;
+            border-radius: 6px; padding: 5px 10px; font-size: 0.74rem; cursor: pointer;
+        }
+
+        .fila-miembro-form { display: flex; align-items: center; gap: 6px; }
+
+        .fila-miembro-form input {
+            flex: 1; padding: 5px 8px; border: none; border-radius: 6px;
+            background-color: #fff; font-size: 0.8rem; outline: none;
+        }
+
+        .btn-quitar-miembro {
+            background-color: #FF383C; color: #fff; border: none;
+            border-radius: 4px; padding: 3px 8px; font-size: 0.7rem; cursor: pointer;
+        }
+
+        .btn-agregar-miembro {
+            background-color: #6B5B95; color: #fff; border: none;
+            border-radius: 6px; padding: 5px 12px; font-size: 0.76rem;
+            cursor: pointer; align-self: flex-start;
+        }
+
+        .btn-agregar-grupo {
+            background-color: #6B5B95; color: #fff; border: none;
+            border-radius: 8px; padding: 7px 14px; font-size: 0.8rem;
+            cursor: pointer; align-self: flex-start;
+        }
+
+        .btn-cancelar {
+            background-color: #FF383C; color: #fff; border: none;
+            border-radius: 20px; padding: 8px 22px; font-size: 0.86rem; cursor: pointer;
+        }
+
+        .btn-crear, .btn-guardar {
+            background-color: #34C759; color: #fff; border: none;
+            border-radius: 20px; padding: 8px 22px; font-size: 0.86rem; cursor: pointer;
+        }
+
+        /* gestion de grupos */
+        .layout-grupos { display: flex; gap: 14px; align-items: flex-start; }
+
+        .panel-lista { width: 240px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; }
+
+        .fila-grupo {
+            background-color: #C9C9C9; border-radius: 8px;
+            padding: 9px 12px; display: flex; align-items: center;
+            justify-content: space-between; cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .fila-grupo:hover, .fila-grupo.sel { border-color: #6750A4; }
+        .fila-grupo .ng { font-size: 0.84rem; color: #1C1B1F; font-weight: 500; }
+        .fila-grupo .cm { font-size: 0.7rem; color: #575757; }
+
+        .btn-nuevo-grupo {
+            background-color: #6B5B95; color: #fff; border: none;
+            border-radius: 8px; padding: 8px 12px; font-size: 0.8rem;
+            cursor: pointer; width: 100%; text-align: center;
+        }
+
+        .panel-detalle { flex: 1; }
+
+        .campo-nombre-grupo {
+            display: flex; align-items: center; gap: 8px;
+            padding: 10px 14px; border-bottom: 1px solid #BFB7CC;
+        }
+
+        .campo-nombre-grupo label { font-size: 0.8rem; color: #575757; flex-shrink: 0; }
+
+        .campo-nombre-grupo input {
+            flex: 1; padding: 6px 10px; border: none; border-radius: 6px;
+            background-color: #fff; font-size: 0.86rem; outline: none;
+        }
+
+        .lista-miembros-det { padding: 10px 14px; display: flex; flex-direction: column; gap: 5px; }
+
+        .fila-miembro-det {
+            background-color: #C9C9C9; border-radius: 8px;
+            padding: 8px 10px; display: flex; align-items: center; gap: 8px;
+        }
+
+        .fila-miembro-det .datos { flex: 1; }
+        .fila-miembro-det .datos .carnet { font-size: 0.8rem; color: #1C1B1F; font-weight: 500; }
+        .fila-miembro-det .datos .nombre-est { font-size: 0.7rem; color: #575757; }
+
+        .agregar-miembro-det {
+            padding: 8px 14px 12px;
+            display: flex; gap: 8px; align-items: center;
+            border-top: 1px solid #BFB7CC;
+        }
+
+        .agregar-miembro-det input {
+            flex: 1; padding: 6px 10px; border: none; border-radius: 8px;
+            background-color: #fff; font-size: 0.83rem; outline: none;
+        }
+
+        .btn-agregar-det {
+            background-color: #34C759; color: #fff; border: none;
+            border-radius: 8px; padding: 6px 14px; font-size: 0.8rem; cursor: pointer;
+        }
+
+        .acciones-grupo-det {
+            padding: 8px 14px 12px;
+            display: flex; justify-content: space-between;
+        }
+
+        .btn-eliminar-grupo {
+            background-color: #FF383C; color: #fff; border: none;
+            border-radius: 20px; padding: 7px 14px; font-size: 0.8rem; cursor: pointer;
+        }
+
+        .placeholder-det {
+            color: #BFB7CC; font-size: 0.86rem;
+            padding: 24px; text-align: center;
+        }
+
+        /* revisar entrega */
+        .fila-columnas { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 14px; }
+
+        .card-info { flex: 0 0 250px; }
+        .card-codigo { flex: 1; }
+
+        .linea-info {
+            font-size: 0.82rem; color: #1C1B1F;
+            padding: 5px 0; border-bottom: 1px solid #BFB7CC;
+            display: flex; gap: 6px;
+        }
+
+        .linea-info:last-child { border-bottom: none; }
+        .linea-info .etiqueta { color: #575757; flex-shrink: 0; min-width: 80px; }
+
+        .firma-texto {
+            font-size: 0.7rem; color: #575757; word-break: break-all;
+            font-family: monospace; background-color: #fff;
+            border-radius: 6px; padding: 7px 10px;
+        }
+
+        .visor-codigo {
+            background-color: #1D192B; padding: 14px 16px;
+            font-family: monospace; font-size: 0.78rem; color: #EADDFF;
+            white-space: pre; overflow-x: auto; min-height: 180px;
+        }
+
+        .fila-historial {
+            display: flex; align-items: center; gap: 10px;
+            padding: 7px 0; border-bottom: 1px solid #BFB7CC;
+            font-size: 0.8rem; color: #1C1B1F;
+        }
+
+        .fila-historial:last-child { border-bottom: none; }
+
+        .badge-version {
+            background-color: #6750A4; color: #fff;
+            border-radius: 20px; padding: 2px 10px;
+            font-size: 0.7rem; flex-shrink: 0;
+        }
+
+        .fila-calificar { display: flex; gap: 14px; align-items: flex-start; }
+        .grupo-campo { flex: 1; }
+        .grupo-campo label { display: block; font-size: 0.8rem; color: #575757; margin-bottom: 4px; }
+
+        .grupo-campo input[type="number"],
+        .grupo-campo textarea {
+            width: 100%; padding: 7px 10px; border: none; border-radius: 8px;
+            background-color: #fff; font-size: 0.86rem; color: #1C1B1F;
+            outline: none; font-family: inherit;
+        }
+
+        .grupo-campo input[type="number"] { max-width: 110px; }
+        .grupo-campo textarea { resize: vertical; min-height: 65px; }
+
+        /* login / registro */
+        .pantalla-centrada {
+            flex: 1; background-color: #4B3B8C;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 12px;
+        }
+
+        .tarjeta {
+            background-color: #EADDFF; border-radius: 16px;
+            width: 380px; overflow: hidden;
+        }
+
+        .tarjeta-wide { width: 540px; }
+
+        .tarjeta-header { background-color: #6750A4; text-align: center; padding: 14px 0; }
+        .tarjeta-header h1 { color: #fff; font-size: 1.08rem; font-weight: 600; }
+
+        .tarjeta-cuerpo { padding: 22px 26px 6px; display: flex; flex-direction: column; gap: 13px; }
+        .tarjeta-cuerpo-row { display: flex; gap: 22px; }
+
+        .campo-form label { display: block; font-size: 0.84rem; color: #1C1B1F; margin-bottom: 4px; }
+
+        .campo-form input {
+            width: 100%; padding: 8px 12px; border: none; border-radius: 8px;
+            background-color: #fff; font-size: 0.88rem; color: #1C1B1F; outline: none;
+        }
+
+        .campo-form .nota { font-size: 0.7rem; color: #6B6B6B; margin-top: 3px; }
+
+        .enlaces { display: flex; justify-content: space-between; padding: 4px 26px 6px; }
+        .enlaces a { font-size: 0.76rem; color: #316AFB; text-decoration: none; }
+
+        .tarjeta-pie { padding: 4px 26px 18px; display: flex; justify-content: flex-end; }
+
+        .btn-ingresar, .btn-crear-form {
+            background-color: #34C759; color: #fff; border: none;
+            border-radius: 20px; padding: 9px 30px; font-size: 0.88rem; cursor: pointer;
+        }
+
+        .columna-campos { flex: 1; display: flex; flex-direction: column; gap: 12px; }
+        .columna-rol { width: 126px; display: flex; flex-direction: column; gap: 8px; padding-top: 4px; }
+        .columna-rol .rol-label { font-size: 0.84rem; color: #1C1B1F; margin-bottom: 2px; }
+        .opcion-rol { display: flex; align-items: center; gap: 8px; font-size: 0.86rem; color: #1C1B1F; }
+        .opcion-rol input { accent-color: #6750A4; width: 15px; height: 15px; }
+    </style>
+</head>
+<body>
+
+<nav class="mock-nav">
+    <span>Vista previa:</span>
+    <button class="mock-btn activo" onclick="ir('login')">Login</button>
+    <button class="mock-btn" onclick="ir('register')">Registro</button>
+    <button class="mock-btn" onclick="ir('menu')">Menu profesor</button>
+    <button class="mock-btn" onclick="ir('crearTarea')">Crear tarea</button>
+    <button class="mock-btn" onclick="ir('verEntregas')">Ver entregas</button>
+    <button class="mock-btn" onclick="ir('gestionGrupos')">Gestion grupos</button>
+    <button class="mock-btn" onclick="ir('revisarEntrega')">Revisar entrega</button>
+</nav>
+
+<!-- ── LOGIN ── -->
+<div class="pantalla visible" id="p-login">
+    <div class="pantalla-centrada">
+        <div class="tarjeta">
+            <div class="tarjeta-header"><h1>Inicio de sesion</h1></div>
+            <div class="tarjeta-cuerpo">
+                <div class="campo-form">
+                    <label>Nombre de usuario</label>
+                    <input type="text" placeholder="Ej: mar.gomez">
+                </div>
+                <div class="campo-form">
+                    <label>Contrasena</label>
+                    <input type="password">
+                </div>
+            </div>
+            <div class="enlaces">
+                <a href="#">Olvide mi contrasena</a>
+                <a href="#" onclick="ir('register');return false">Crear cuenta</a>
+            </div>
+            <div class="tarjeta-pie">
+                <button class="btn-ingresar" onclick="ir('menu')">Ingresar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── REGISTRO ── -->
+<div class="pantalla" id="p-register">
+    <div class="pantalla-centrada">
+        <div class="tarjeta tarjeta-wide">
+            <div class="tarjeta-header"><h1>Registro</h1></div>
+            <div class="tarjeta-cuerpo">
+                <div class="tarjeta-cuerpo-row">
+                    <div class="columna-campos">
+                        <div class="campo-form"><label>Nombre de usuario</label><input type="text"></div>
+                        <div class="campo-form"><label>Nombre completo</label><input type="text"></div>
+                        <div class="campo-form"><label>Correo</label><input type="email"></div>
+                        <div class="campo-form">
+                            <label>Contrasena</label>
+                            <input type="password">
+                            <span class="nota">Tiene que tener mas de 8 caracteres</span>
+                        </div>
+                        <div class="campo-form"><label>Carnet</label><input type="text"></div>
+                    </div>
+                    <div class="columna-rol">
+                        <span class="rol-label">Tipo de usuario</span>
+                        <label class="opcion-rol"><input type="radio" name="rm" value="E"> Estudiante</label>
+                        <label class="opcion-rol"><input type="radio" name="rm" value="P" checked> Profesor</label>
+                    </div>
+                </div>
+            </div>
+            <div class="tarjeta-pie">
+                <button class="btn-crear-form" onclick="ir('login')">Crear</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── MENU PROFESOR ── -->
+<div class="pantalla" id="p-menu">
+    <div class="bg">
+        <aside class="sidebar">
+            <div class="sidebar-perfil">
+                <div class="icono-usuario"><svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg></div>
+                <span>Marcelo Gomez</span>
+            </div>
+            <button class="nav-btn activo">Cursos</button>
+            <button class="nav-btn" onclick="ir('crearTarea')">Crear tarea</button>
+            <div class="sidebar-espaciador"></div>
+            <button class="btn-cerrar-sesion" onclick="ir('login')">Cerrar sesion</button>
+        </aside>
+        <main class="contenido">
+            <h2>Cursos</h2>
+            <div class="card">
+                <div class="card-header"><h3>Tareas creadas</h3></div>
+                <div class="card-cuerpo">
+                    <div class="fila-item">
+                        <div class="info">
+                            <div class="titulo">Numero par o impar</div>
+                            <div class="meta">Entrega: 14/05/26 &nbsp;|&nbsp; Individual</div>
+                        </div>
+                        <button class="btn-ver" onclick="ir('verEntregas')">Ver</button>
+                    </div>
+                    <div class="fila-item">
+                        <div class="info">
+                            <div class="titulo">Calculadora</div>
+                            <div class="meta">Entrega: 18/05/26 &nbsp;|&nbsp; Individual</div>
+                        </div>
+                        <button class="btn-ver" onclick="ir('verEntregas')">Ver</button>
+                    </div>
+                    <div class="fila-item">
+                        <div class="info">
+                            <div class="titulo">Fibonacci</div>
+                            <div class="meta">Entrega: 25/05/26 &nbsp;|&nbsp; Grupal</div>
+                        </div>
+                        <button class="btn-ver" onclick="ir('verEntregas')">Ver</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- ── CREAR TAREA ── -->
+<div class="pantalla" id="p-crearTarea">
+    <div class="bg">
+        <aside class="sidebar">
+            <div class="sidebar-perfil">
+                <div class="icono-usuario"><svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg></div>
+                <span>Marcelo Gomez</span>
+            </div>
+            <button class="nav-btn" onclick="ir('menu')">Cursos</button>
+            <button class="nav-btn activo">Crear tarea</button>
+            <div class="sidebar-espaciador"></div>
+            <button class="btn-cerrar-sesion" onclick="ir('login')">Cerrar sesion</button>
+        </aside>
+        <main class="contenido">
+            <h2>Crear tarea</h2>
+            <div class="card card-form">
+                <div class="card-header"><h3>Nueva tarea</h3></div>
+                <div class="card-cuerpo">
+                    <div class="campo"><label>Nombre de la tarea</label><input type="text" placeholder="Ej: Fibonacci"></div>
+                    <div class="campo"><label>Instrucciones</label><textarea placeholder="Describa lo que debe hacer el estudiante..."></textarea></div>
+                    <div class="campo"><label>Fecha de entrega</label><input type="date"></div>
+                    <div class="campo-check">
+                        <input type="checkbox" id="mockGrupal" onchange="toggleGruposMock(this)">
+                        <label for="mockGrupal">Tarea grupal</label>
+                    </div>
+                    <!-- grupos mock -->
+                    <div id="mockSeccionGrupos" style="display:none;flex-direction:column;gap:10px">
+                        <label style="font-size:0.84rem;color:#575757;font-weight:600">Grupos de trabajo</label>
+                        <div id="mockListaGrupos"></div>
+                        <button class="btn-agregar-grupo" onclick="agregarGrupoMock()">+ Agregar grupo</button>
+                    </div>
+                </div>
+                <div class="card-pie">
+                    <button class="btn-cancelar" onclick="ir('menu')">Cancelar</button>
+                    <button class="btn-crear" onclick="ir('menu')">Crear</button>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- ── VER ENTREGAS ── -->
+<div class="pantalla" id="p-verEntregas">
+    <div class="bg">
+        <aside class="sidebar">
+            <div class="sidebar-perfil">
+                <div class="icono-usuario"><svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg></div>
+                <span>Marcelo Gomez</span>
+            </div>
+            <button class="nav-btn" onclick="ir('menu')">Cursos</button>
+            <button class="nav-btn" onclick="ir('crearTarea')">Crear tarea</button>
+            <div class="sidebar-espaciador"></div>
+            <button class="btn-cerrar-sesion" onclick="ir('login')">Cerrar sesion</button>
+        </aside>
+        <main class="contenido">
+            <div class="contenido-header">
+                <h2>Fibonacci</h2>
+                <p>Entregas recibidas &nbsp;|&nbsp; Grupal</p>
+            </div>
+            <div class="card card-full">
+                <div class="card-header">
+                    <h3>Estudiantes que han entregado</h3>
+                    <span class="badge-total">3</span>
+                </div>
+                <div class="card-cuerpo">
+                    <div class="fila-item">
+                        <div class="info">
+                            <div class="titulo">Javier Lee Liang</div>
+                            <div class="meta">Entregado: 09/05/26 9:47 &nbsp;|&nbsp; v1 &nbsp;|&nbsp; Grupo Alpha</div>
+                        </div>
+                        <span class="badge-nota ok">92 pts</span>
+                        <button class="btn-revisar" onclick="ir('revisarEntrega')">Revisar</button>
+                    </div>
+                    <div class="fila-item">
+                        <div class="info">
+                            <div class="titulo">Andrea Mora Salas</div>
+                            <div class="meta">Entregado: 10/05/26 14:20 &nbsp;|&nbsp; v2 &nbsp;|&nbsp; Grupo Beta</div>
+                        </div>
+                        <span class="badge-nota sin">Sin calificar</span>
+                        <button class="btn-revisar" onclick="ir('revisarEntrega')">Revisar</button>
+                    </div>
+                    <div class="fila-item">
+                        <div class="info">
+                            <div class="titulo">Carlos Vargas Quesada</div>
+                            <div class="meta">Entregado: 13/05/26 8:05 &nbsp;|&nbsp; v1 &nbsp;|&nbsp; Grupo Alpha</div>
+                        </div>
+                        <span class="badge-nota sin">Sin calificar</span>
+                        <button class="btn-revisar" onclick="ir('revisarEntrega')">Revisar</button>
+                    </div>
+                </div>
+                <div class="card-pie">
+                    <button class="btn-atras" onclick="ir('menu')">Atras</button>
+                    <button class="btn-grupos" onclick="ir('gestionGrupos')">Gestionar grupos</button>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- ── GESTION DE GRUPOS ── -->
+<div class="pantalla" id="p-gestionGrupos">
+    <div class="bg">
+        <aside class="sidebar">
+            <div class="sidebar-perfil">
+                <div class="icono-usuario"><svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg></div>
+                <span>Marcelo Gomez</span>
+            </div>
+            <button class="nav-btn" onclick="ir('menu')">Cursos</button>
+            <button class="nav-btn" onclick="ir('crearTarea')">Crear tarea</button>
+            <div class="sidebar-espaciador"></div>
+            <button class="btn-cerrar-sesion" onclick="ir('login')">Cerrar sesion</button>
+        </aside>
+        <main class="contenido">
+            <div class="contenido-header">
+                <h2>Grupos: Fibonacci</h2>
+                <p>Administre los grupos de esta tarea</p>
+            </div>
+            <div class="layout-grupos">
+                <!-- lista de grupos -->
+                <div class="panel-lista">
+                    <div class="card" style="max-width:100%">
+                        <div class="card-header"><h3>Grupos</h3></div>
+                        <div class="card-cuerpo" id="mockListaGruposDet">
+                            <div class="fila-grupo sel" onclick="selGrupoMock(0)">
+                                <span class="ng">Grupo Alpha</span>
+                                <span class="cm">2 estudiantes</span>
+                            </div>
+                            <div class="fila-grupo" onclick="selGrupoMock(1)">
+                                <span class="ng">Grupo Beta</span>
+                                <span class="cm">1 estudiante</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn-nuevo-grupo">+ Nuevo grupo</button>
+                    <button class="btn-atras" onclick="ir('verEntregas')">Atras</button>
+                </div>
+                <!-- detalle grupo -->
+                <div class="panel-detalle" id="mockPanelDetalle">
+                    <div class="card card-full">
+                        <div class="card-header"><h3>Grupo Alpha</h3></div>
+                        <div class="campo-nombre-grupo">
+                            <label>Nombre</label>
+                            <input type="text" value="Grupo Alpha">
+                        </div>
+                        <div class="lista-miembros-det">
+                            <div class="fila-miembro-det">
+                                <div class="datos">
+                                    <div class="carnet">2020184824</div>
+                                    <div class="nombre-est">Javier Lee Liang</div>
+                                </div>
+                                <button class="btn-quitar-miembro">Quitar</button>
+                            </div>
+                            <div class="fila-miembro-det">
+                                <div class="datos">
+                                    <div class="carnet">2022163260</div>
+                                    <div class="nombre-est">Carlos Vargas Quesada</div>
+                                </div>
+                                <button class="btn-quitar-miembro">Quitar</button>
+                            </div>
+                        </div>
+                        <div class="agregar-miembro-det">
+                            <input type="text" placeholder="Carnet del estudiante">
+                            <button class="btn-agregar-det">Agregar</button>
+                        </div>
+                        <div class="acciones-grupo-det">
+                            <button class="btn-eliminar-grupo">Eliminar grupo</button>
+                            <button class="btn-guardar">Guardar nombre</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- ── REVISAR ENTREGA ── -->
+<div class="pantalla" id="p-revisarEntrega">
+    <div class="bg">
+        <aside class="sidebar">
+            <div class="sidebar-perfil">
+                <div class="icono-usuario"><svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg></div>
+                <span>Marcelo Gomez</span>
+            </div>
+            <button class="nav-btn" onclick="ir('menu')">Cursos</button>
+            <button class="nav-btn" onclick="ir('crearTarea')">Crear tarea</button>
+            <div class="sidebar-espaciador"></div>
+            <button class="btn-cerrar-sesion" onclick="ir('login')">Cerrar sesion</button>
+        </aside>
+        <main class="contenido">
+            <h2 style="margin-bottom:14px">Revisar entrega</h2>
+            <div class="fila-columnas">
+                <div class="card card-info">
+                    <div class="card-header"><h3>Informacion</h3></div>
+                    <div class="card-cuerpo">
+                        <div class="linea-info"><span class="etiqueta">Estudiante</span><span>Javier Lee Liang</span></div>
+                        <div class="linea-info"><span class="etiqueta">Grupo</span><span>Grupo Alpha</span></div>
+                        <div class="linea-info"><span class="etiqueta">Archivo</span><span>Tarea01.py</span></div>
+                        <div class="linea-info"><span class="etiqueta">Entregado</span><span>09/05/26 9:47</span></div>
+                        <div class="linea-info"><span class="etiqueta">Version</span><span>v1</span></div>
+                    </div>
+                    <div class="card-header" style="margin-top:2px"><h3>Firma digital</h3></div>
+                    <div class="card-cuerpo">
+                        <p class="firma-texto">a3f9c2e1b4d87650f2a1c9e3d74b56801f2a9c3e4b67d890e1f2a3b4c5d6e7f8</p>
+                    </div>
+                </div>
+                <div class="card card-codigo" style="max-width:100%">
+                    <div class="card-header"><h3>Codigo entregado</h3></div>
+                    <pre class="visor-codigo">numero = int(input("Ingrese un numero: "))
+
+if numero % 2 == 0:
+    print("El numero es par")
+else:
+    print("El numero es impar")</pre>
+                </div>
+            </div>
+            <div class="card card-full" style="margin-bottom:14px">
+                <div class="card-header"><h3>Historial de entregas</h3></div>
+                <div class="card-cuerpo">
+                    <div class="fila-historial">
+                        <span class="badge-version">v1</span>
+                        <span>09/05/26 9:47:32</span>
+                        <span style="color:#575757;font-size:0.7rem;font-family:monospace">Firma: a3f9c2e1...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card card-full">
+                <div class="card-header"><h3>Calificacion</h3></div>
+                <div class="card-cuerpo">
+                    <div class="fila-calificar">
+                        <div class="grupo-campo">
+                            <label>Nota (0 - 100)</label>
+                            <input type="number" min="0" max="100" value="92">
+                        </div>
+                        <div class="grupo-campo" style="flex:2">
+                            <label>Comentario</label>
+                            <textarea>Buen trabajo, logica correcta y codigo limpio.</textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-pie">
+                    <button class="btn-atras" onclick="ir('verEntregas')">Atras</button>
+                    <button class="btn-guardar">Guardar calificacion</button>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    const IDS = {
+        login:          'p-login',
+        register:       'p-register',
+        menu:           'p-menu',
+        crearTarea:     'p-crearTarea',
+        verEntregas:    'p-verEntregas',
+        gestionGrupos:  'p-gestionGrupos',
+        revisarEntrega: 'p-revisarEntrega',
+    };
+
+    const KEYS = Object.keys(IDS);
+
+    function ir(id) {
+        KEYS.forEach(k => document.getElementById(IDS[k]).classList.remove('visible'));
+        document.getElementById(IDS[id]).classList.add('visible');
+        document.querySelectorAll('.mock-btn').forEach((b, i) => {
+            b.classList.toggle('activo', KEYS[i] === id);
+        });
+    }
+
+    /* crear tarea: mostrar/ocultar grupos */
+    let cntGrupoMock = 0;
+
+    function toggleGruposMock(cb) {
+        const sec = document.getElementById('mockSeccionGrupos');
+        sec.style.display = cb.checked ? 'flex' : 'none';
+    }
+
+    function agregarGrupoMock() {
+        cntGrupoMock++;
+        const lista = document.getElementById('mockListaGrupos');
+
+        const bloque = document.createElement('div');
+        bloque.className = 'bloque-grupo';
+
+        const header = document.createElement('div');
+        header.className = 'bloque-grupo-header';
+
+        const inp = document.createElement('input');
+        inp.type = 'text';
+        inp.placeholder = 'Nombre del grupo ' + cntGrupoMock;
+
+        const btnQ = document.createElement('button');
+        btnQ.className = 'btn-quitar-grupo';
+        btnQ.textContent = 'Quitar grupo';
+        btnQ.onclick = () => bloque.remove();
+
+        header.appendChild(inp);
+        header.appendChild(btnQ);
+
+        const listaMiembros = document.createElement('div');
+        listaMiembros.style.cssText = 'display:flex;flex-direction:column;gap:4px';
+
+        const filaMiembro = document.createElement('div');
+        filaMiembro.className = 'fila-miembro-form';
+        const inpM = document.createElement('input');
+        inpM.type = 'text';
+        inpM.placeholder = 'Carnet del estudiante';
+        filaMiembro.appendChild(inpM);
+        listaMiembros.appendChild(filaMiembro);
+
+        const btnAM = document.createElement('button');
+        btnAM.className = 'btn-agregar-miembro';
+        btnAM.textContent = '+ Agregar estudiante';
+        btnAM.onclick = () => {
+            const f = document.createElement('div');
+            f.className = 'fila-miembro-form';
+            const i = document.createElement('input');
+            i.type = 'text'; i.placeholder = 'Carnet del estudiante';
+            const bq = document.createElement('button');
+            bq.className = 'btn-quitar-miembro'; bq.textContent = 'Quitar';
+            bq.onclick = () => f.remove();
+            f.appendChild(i); f.appendChild(bq);
+            listaMiembros.appendChild(f);
+        };
+
+        bloque.appendChild(header);
+        bloque.appendChild(listaMiembros);
+        bloque.appendChild(btnAM);
+        lista.appendChild(bloque);
+    }
+
+    /* gestion grupos mock: seleccionar grupo */
+    function selGrupoMock(idx) {
+        document.querySelectorAll('#mockListaGruposDet .fila-grupo').forEach((f, i) => {
+            f.classList.toggle('sel', i === idx);
+        });
+    }
+</script>
+</body>
+</html>
