@@ -29,7 +29,7 @@ class EntregaController
 
         $data = json_decode(file_get_contents('php://input'), true);
 
-        $campos = ['idGrupoTrabajo', 'idTarea', 'idArchivoP', 'fechaCreacion', 'version', 'nota', 'contenido'];
+        $campos = ['idTarea', 'idArchivoP', 'fechaCreacion', 'version', 'nota', 'contenido'];
 
         foreach ($campos as $campo) {
             if (!isset($data[$campo]) || $data[$campo] === '') {
@@ -45,7 +45,7 @@ class EntregaController
         try {
             $this->entregaModel->crearEntrega(
                 $idUsuario,
-                (int) $data['idGrupoTrabajo'],
+                (int) $data['idGrupoTrabajo'] ?? null,
                 (int) $data['idTarea'],
                 (int) $data['idArchivoP'],
                 (string) $data['fechaCreacion'],
