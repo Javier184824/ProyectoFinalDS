@@ -108,7 +108,7 @@ $router->add('GET', '/api/tareas', function () {
 
 $router->add('POST', '/api/tareas/verificarGrupo', function () {
     $controller = new TareaController();
-    $controller->cargarTareas();
+    $controller->verificarTGrupo();
 });
 
 $router->add('POST', '/api/grupos/verGrupo', function () {
