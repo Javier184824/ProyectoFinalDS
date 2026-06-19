@@ -43,4 +43,15 @@ class TareaModel
         return $tareas;
     }
 
+    public function verificarGrupoT(int $idTarea): ?array
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM Tarea WHERE idTarea = ?");
+        $stmt->execute([$idTarea]);
+
+        $tarea = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $tarea ?: null;
+
+    }
+
 }

@@ -106,6 +106,16 @@ $router->add('GET', '/api/tareas', function () {
     $controller->cargarTareas();
 });
 
+$router->add('POST', '/api/tareas/verificarGrupo', function () {
+    $controller = new TareaController();
+    $controller->cargarTareas();
+});
+
+$router->add('POST', '/api/grupos/verGrupo', function () {
+    $controller = new GrupoController();
+    $controller->obtenerIdGrupo();
+});
+
 $router->add('POST', '/api/archivop/guardar', function () {
     $controller = new ArchivoPController();
     $controller->guardarArchivo();

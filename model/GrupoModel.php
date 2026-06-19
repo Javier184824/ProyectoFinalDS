@@ -141,4 +141,17 @@ class GrupoModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+
+    public function buscarGrupo(int $idUsuario, int $idCurso): int
+    {
+        $stmt = $this->pdo->prepare("SELECT g.idGrupoTrabajo 
+        FROM EstudianteXGrupoTrabajo e
+        JOIN GrupoTrabajo g on e.idGrupoTrabajo = g.idGrupoTrabajo
+        WHERE e.idUsuario = ?
+        AND g.idCurso = ?");
+        $stmt->execute([$idUsuario, $idCurso]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$row) throw new \RuntimeException("Grupo no encontrado");
+        return (int) $row['idGrupoTrabajo'];
+    }
 }

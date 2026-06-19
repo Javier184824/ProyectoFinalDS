@@ -20,6 +20,20 @@ class EntregaModel
         $stmtEntrega->execute([$idUsuario, $idGrupoTrabajo, $idTarea, $idArchivoP, $fechaCreacion, $version, $nota, $comentarioProfesor, $contenido]);
     }
 
+    public function verificarGrupo(int $idTarea, string $idUsuario): ?array
+    {
+        $stmt = $this->pdo->prepare("SELECT idGrupoTrabajo 
+        FROM EstudianteXGrupoTrabajo 
+        WHERE idUsuario = ?");
+        $stmt->execute([$idUsuario]);
+
+        $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $usuario ?: null;
+    }
+
+    
+
     // lista las entregas de una tarea con nombre del estudiante y del archivo
     public function listarPorTarea(int $idTarea): array
     {

@@ -62,6 +62,73 @@ class TareaController
         
     }
 
+    public function verificarTGrupo(): void
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (!isset($_SESSION['login_response'])) {
+            http_response_code(401);
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['success' => false, 'error' => 'Sesión no encontrada']);
+            exit;
+        }
+
+        $usuario = $_SESSION['login_response'];
+        $idUsuario = (int) $usuario['idUsuario'];
+
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        $campos = ['idTarea'];
+
+        foreach ($campos as $campo) {
+            if (!array_key_exists($campo, $data)) {
+                echo json_encode([
+                    "success" => false,
+                    "error" => "campo requerido: " . $campo
+                ]);
+                return;
+            }
+        }
+
+        try {
+            $tarea = $this->tareaModel->verificarGrupoT(
+                (int) $data['idTarea']
+            );
+
+            if (!$tarea) {
+                http_response_code(404);
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode([
+                    'success' => false,
+                    'error'   => 'Tarea no encontrada'
+                ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                exit;
+            }
+
+            http_response_code(200);
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => true,
+                'estado'  => 'tarea verificada',
+                'esGrupal' => $tarea['esGrupal']
+            ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            exit;
+
+        } catch (PDOException $e) {
+            http_response_code(500);
+            header('Content-Type: application/json; charset=utf-8');
+
+            echo json_encode([
+                'success' => false,
+                'error'   => $e->getMessage()
+            ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+            exit;
+        }
+    }
+
 
     // nuevas funciones para el controller
     // ── POST /api/tareas ──────────────────────────────────
