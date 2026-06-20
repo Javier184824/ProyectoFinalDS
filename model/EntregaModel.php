@@ -79,4 +79,30 @@ class EntregaModel
         ");
         $stmt->execute([$nota, $comentarioProfesor, $idEntrega]);
     }
+
+    public function obtenerEntregasIdEstudiante(int $idUsuario, int $idTarea): array
+    {
+        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $stmt = $this->pdo->prepare("
+            SELECT e.contenido, e.fechaCreacion, a.nombreArchivoP
+            FROM Entrega e
+            JOIN ArchivoP a ON e.idArchivoP = a.idArchivoP
+            WHERE e.idUsuario = ? AND e.idTarea = ?
+        ");
+        $stmt->execute([$idUsuario, $idTarea]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function obtenerEntregasIdGrupo(int $idGrupo, int $idTarea): array
+    {
+        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $stmt = $this->pdo->prepare("
+            SELECT e.contenido, e.fechaCreacion, a.nombreArchivoP
+            FROM Entrega e
+            JOIN ArchivoP a ON e.idArchivoP = a.idArchivoP
+            WHERE e.idGrupoTrabajo = ? AND e.idTarea = ?
+        ");
+        $stmt->execute([$idGrupo, $idTarea]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

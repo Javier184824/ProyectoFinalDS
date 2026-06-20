@@ -106,6 +106,16 @@ $router->add('GET', '/api/tareas', function () {
     $controller->cargarTareas();
 });
 
+$router->add('GET', '/api/entregas/individuales', function () {
+    $controller = new EntregaController();
+    $controller->obtenerEntregasEstudiante();
+});
+
+$router->add('GET', '/api/entregas/grupales', function () {
+    $controller = new EntregaController();
+    $controller->obtenerEntregasGrupos();
+});
+
 $router->add('POST', '/api/tareas/verificarGrupo', function () {
     $controller = new TareaController();
     $controller->verificarTGrupo();

@@ -220,4 +220,96 @@ class EntregaController
         }
     }
 
+    public function obtenerEntregasEstudiante():void{
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (!isset($_SESSION['login_response'])) {
+            http_response_code(401);
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['success' => false, 'error' => 'Sesión no encontrada']);
+            exit;
+        }
+
+        if (empty($_GET['idTarea'])) {
+            http_response_code(400);
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => false,
+                'error' => 'idTarea requerido'
+            ]);
+            exit;
+        }
+
+        $data = $_SESSION['login_response'];
+        $idTarea = $_GET['idTarea'] ?? null;
+        try{
+            $entregas = $this->entregaModel->obtenerEntregasIdEstudiante((int) $data['idUsuario'], (int) $idTarea);
+
+            http_response_code(200);
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => true,
+                'entregas'  => $entregas
+            ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            exit;
+        }
+        catch (PDOException $e) {
+            http_response_code(500);
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => false,
+                'error'   => 'Error interno al buscar entregas'
+            ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            exit;
+        }
+    }
+
+    public function obtenerEntregasGrupos():void{
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (!isset($_SESSION['login_response'])) {
+            http_response_code(401);
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['success' => false, 'error' => 'Sesión no encontrada']);
+            exit;
+        }
+
+        if (empty($_GET['idTarea'])) {
+            http_response_code(400);
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => false,
+                'error' => 'idTarea requerido'
+            ]);
+            exit;
+        }
+
+        $idTarea = $_GET['idTarea'] ?? null;
+        $idGrupo = $_GET['idGrupo'] ?? null;
+        try{
+            $entregas = $this->entregaModel->obtenerEntregasIdGrupo((int) $idGrupo, (int) $idTarea);
+
+            http_response_code(200);
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => true,
+                'entregas'  => $entregas
+            ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            exit;
+        }
+        catch (PDOException $e) {
+            http_response_code(500);
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => false,
+                'error'   => 'Error interno al buscar entregas'
+            ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            exit;
+        }
+    }
+
 }
