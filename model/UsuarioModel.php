@@ -46,4 +46,12 @@ class UsuarioModel
         $stmt->execute([$idUsuario]);
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
+
+    public function verPerfil(string $idUsuario): ?array
+    {
+        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $stmt = $this->pdo->prepare("SELECT * FROM Usuario WHERE idUsuario = ?");
+        $stmt->execute([$idUsuario]);
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
 }

@@ -82,6 +82,11 @@ $router->add('POST', '/api/auth/register', function () {
     $controller->register();
 });
 
+$router->add('POST', '/api/auth/perfil', function () {
+    $controller = new UsuarioController();
+    $controller->perfil();
+});
+
 // Obtiene los cursos según el usuario que inició sesión
 $router->add('GET', '/api/cursos', function () {
     $controller = new CursoController();
