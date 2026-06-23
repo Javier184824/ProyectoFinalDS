@@ -87,12 +87,12 @@ $router->add('GET', '/api/auth/perfil', function () {
     $controller->perfil();
 });
 
-$router->add('PUT', '/api/perfil/cambioNombre', function () {
+$router->add('POST', '/api/perfil/cambioNombre', function () {
     $controller = new UsuarioController();
     $controller->cambioNombre();
 });
 
-$router->add('PUT', '/api/perfil/cambioCorreo', function () {
+$router->add('POST', '/api/perfil/cambioCorreo', function () {
     $controller = new UsuarioController();
     $controller->cambioCorreo();
 });
