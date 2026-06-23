@@ -82,6 +82,16 @@ $router->add('POST', '/api/auth/register', function () {
     $controller->register();
 });
 
+$router->add('POST', '/api/auth/recCont', function () {
+    $controller = new UsuarioController();
+    $controller->enviarCodigoCambioContrasena();
+});
+
+$router->add('POST', '/api/auth/confirmarCorreo', function () {
+    $controller = new UsuarioController();
+    $controller->verificarCorreo();
+});
+
 $router->add('GET', '/api/auth/perfil', function () {
     $controller = new UsuarioController();
     $controller->perfil();

@@ -1,5 +1,11 @@
 <?php
 require_once __DIR__ . '/../model/UsuarioModel.php';
+require_once __DIR__ . '/../libs/PHPMailer/src/Exception.php';
+require_once __DIR__ . '/../libs/PHPMailer/src/PHPMailer.php';
+require_once __DIR__ . '/../libs/PHPMailer/src/SMTP.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 class UsuarioController
 {
     private UsuarioModel $usuarioModel;
@@ -270,6 +276,131 @@ class UsuarioController
             http_response_code(500);
             echo json_encode(['success' => false, 'error' => 'Error interno al registrar']);
             exit;
+        }
+    }
+
+    public function enviarCodigoCambioContrasena(): void
+    {
+        header('Content-Type: application/json; charset=utf-8');
+
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        if (!isset($data['correo']) || trim($data['correo']) === '') {
+            echo json_encode([
+                "success" => false,
+                "error" => "Correo requerido"
+            ]);
+            return;
+        }
+
+        $correo = trim($data['correo']);
+
+        try {
+            $codigo = (string) random_int(100000, 999999);
+
+            $enviado = $this->enviarCorreoRecuperacion($correo, $codigo);
+
+            if (!$enviado) {
+                echo json_encode([
+                    "success" => false,
+                    "error" => "No se pudo enviar el correo"
+                ]);
+                return;
+            }
+
+            echo json_encode([
+                "success" => true,
+                "message" => "Código enviado correctamente",
+                "codigo" => $codigo
+            ]);
+
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "error" => $e->getMessage()
+            ]);
+        }
+    }
+
+    private function enviarCorreoRecuperacion(string $destinatario, string $codigo): bool
+    {
+        $mail = new PHPMailer(true);
+
+        try {
+            $mail->isSMTP();
+            $mail->Host = 'smtp.gmail.com';
+            $mail->SMTPAuth = true;
+
+            $mail->Username = 'idedstec@gmail.com';
+            $mail->Password = 'qwri cftr gdbj vgud';
+
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port = 587;
+
+            $mail->setFrom('idedstec@gmail.com', 'Sistema de Entregas');
+            $mail->addAddress($destinatario);
+
+            $mail->isHTML(true);
+            $mail->CharSet = 'UTF-8';
+            $mail->Subject = 'Código para cambio de contraseña';
+
+            $mail->Body = "
+                <h2>Cambio de contraseña</h2>
+                <p>Su código de verificación es:</p>
+                <h1>$codigo</h1>
+                <p>Ingrese este código en la aplicación para continuar con el cambio de contraseña.</p>
+            ";
+
+            $mail->AltBody = "Su código de verificación es: $codigo";
+
+            $mail->send();
+
+            return true;
+
+        } catch (Exception $e) {
+            error_log("Error PHPMailer: " . $mail->ErrorInfo);
+            return false;
+        }
+    }
+
+    public function verificarCorreo(): void
+    {
+        session_start();
+
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        if (!is_array($data)) {
+            $this->json(400, ['success' => false, 'error' => 'JSON inválido']);
+        }
+        if (empty($data['correo'])) {
+            $this->json(400, [
+                'success' => false,
+                'error' => 'Correo requerido'
+            ]);
+        }
+
+        try {
+            $usuario = $this->usuarioModel->buscarPorCorreo((string) $data['correo']);
+
+            if (!$usuario) {
+                $this->json(401, [
+                    'success' => false,
+                    'error' => 'Credenciales inválidas/Correo inexistente'
+                ]);
+            }
+
+            $response = [
+                'success'   => true
+            ];
+            echo json_encode($response, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+            exit;
+
+        } catch (PDOException $e) {
+            $this->json(500, [
+                'success' => false,
+                'error' => 'Error interno al iniciar sesión'
+            ]);
         }
     }
 
