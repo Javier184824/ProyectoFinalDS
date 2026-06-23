@@ -92,6 +92,11 @@ $router->add('POST', '/api/auth/confirmarCorreo', function () {
     $controller->verificarCorreo();
 });
 
+$router->add('POST', '/api/auth/cambiarContrasena', function () {
+    $controller = new UsuarioController();
+    $controller->cambioContrasena();
+});
+
 $router->add('GET', '/api/auth/perfil', function () {
     $controller = new UsuarioController();
     $controller->perfil();
