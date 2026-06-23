@@ -82,7 +82,7 @@ $router->add('POST', '/api/auth/register', function () {
     $controller->register();
 });
 
-$router->add('POST', '/api/auth/perfil', function () {
+$router->add('GET', '/api/auth/perfil', function () {
     $controller = new UsuarioController();
     $controller->perfil();
 });
