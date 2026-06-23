@@ -154,6 +154,125 @@ class UsuarioController
 
     }
 
+    public function cambioCorreo(): void
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (!isset($_SESSION['login_response'])) {
+            http_response_code(401);
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['success' => false, 'error' => 'Sesión no encontrada']);
+            exit;
+        }
+
+        $usuario = $_SESSION['login_response'];
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        $campos = ['correo'];
+        foreach ($campos as $campo) {
+            if (empty($data[$campo])) {
+                http_response_code(400);
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode(['success' => false, 'error' => "campo requerido: {$campo}"]);
+                exit;
+            }
+        }
+        try{
+            $success = $this->usuarioModel->cambiarCorreo(
+                (string) $usuario['idUsuario'],
+                (string) $data['correo']
+            );
+
+            http_response_code(201);
+            header('Content-Type: application/json; charset=utf-8');
+            $response = [
+                'success'   => true,
+                'estado'    => 'correo cambiado'
+            ];
+            echo json_encode($response, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            exit;
+        } catch (PDOException $e) {
+            $code = $e->getCode();
+            $msg = $e->getMessage();
+            if ($code === '23000') {
+                http_response_code(409);
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode(['success' => false, 'error' => 'Correo o nombre de usuario ya existe']);
+                exit;
+            }
+            elseif ($code === 'HY000' && str_contains($msg, 'chk_correo')) {
+                http_response_code(400);
+                header('Content-Type: application/json; charset=utf-8'); // por si acaso
+                echo json_encode(['success' => false, 'error' => 'Formato de correo inválido']);
+                exit;
+            }
+            http_response_code(500);
+            echo json_encode(['success' => false, 'error' => 'Error interno al registrar']);
+            exit;
+        }
+    }
+    public function cambioNombre(): void
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (!isset($_SESSION['login_response'])) {
+            http_response_code(401);
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['success' => false, 'error' => 'Sesión no encontrada']);
+            exit;
+        }
+
+        $usuario = $_SESSION['login_response'];
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        $campos = ['nombre'];
+        foreach ($campos as $campo) {
+            if (empty($data[$campo])) {
+                http_response_code(400);
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode(['success' => false, 'error' => "campo requerido: {$campo}"]);
+                exit;
+            }
+        }
+        try{
+            $success = $this->usuarioModel->cambiarNombre(
+                (string) $usuario['idUsuario'],
+                (string) $data['nombre']
+            );
+
+            http_response_code(201);
+            header('Content-Type: application/json; charset=utf-8');
+            $response = [
+                'success'   => true,
+                'estado'    => 'nombre cambiado'
+            ];
+            echo json_encode($response, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            exit;
+        } catch (PDOException $e) {
+            $code = $e->getCode();
+            $msg = $e->getMessage();
+            if ($code === '23000') {
+                http_response_code(409);
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode(['success' => false, 'error' => 'Correo o nombre de usuario ya existe']);
+                exit;
+            }
+            elseif ($code === 'HY000' && str_contains($msg, 'chk_correo')) {
+                http_response_code(400);
+                header('Content-Type: application/json; charset=utf-8'); // por si acaso
+                echo json_encode(['success' => false, 'error' => 'Formato de correo inválido']);
+                exit;
+            }
+            http_response_code(500);
+            echo json_encode(['success' => false, 'error' => 'Error interno al registrar']);
+            exit;
+        }
+    }
+
     private function json(int $status, array $data): void
     {
         http_response_code($status);

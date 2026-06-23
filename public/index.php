@@ -87,6 +87,16 @@ $router->add('GET', '/api/auth/perfil', function () {
     $controller->perfil();
 });
 
+$router->add('PUT', '/api/perfil/cambioNombre', function () {
+    $controller = new UsuarioController();
+    $controller->cambioNombre();
+});
+
+$router->add('PUT', '/api/perfil/cambioCorreo', function () {
+    $controller = new UsuarioController();
+    $controller->cambioCorreo();
+});
+
 // Obtiene los cursos según el usuario que inició sesión
 $router->add('GET', '/api/cursos', function () {
     $controller = new CursoController();

@@ -54,4 +54,18 @@ class UsuarioModel
         $stmt->execute([$idUsuario]);
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
+
+    public function cambiarNombre(string $idUsuario, string $nuevoNombre): bool
+    {
+        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $stmt = $this->pdo->prepare("UPDATE Usuario SET nombre = ? WHERE idUsuario = ?");
+        return $stmt->execute([$nuevoNombre, $idUsuario]);
+    }
+
+    public function cambiarCorreo(string $idUsuario, string $nuevoCorreo): bool
+    {
+        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $stmt = $this->pdo->prepare("UPDATE Usuario SET correo = ? WHERE idUsuario = ?");
+        return $stmt->execute([$nuevoCorreo, $idUsuario]);
+    }
 }
