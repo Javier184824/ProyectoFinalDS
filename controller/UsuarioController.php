@@ -133,7 +133,7 @@ class UsuarioController
 
         $data = $_SESSION['login_response'];
         try{
-            $usuario = $this->usuarioModel->verificarRol($data['idUsuario']);
+            $usuario = $this->usuarioModel->verPerfil($data['idUsuario']);
             http_response_code(200);
             header('Content-Type: application/json; charset=utf-8');
             echo json_encode([
@@ -147,7 +147,7 @@ class UsuarioController
             header('Content-Type: application/json; charset=utf-8');
             echo json_encode([
                 'success' => false,
-                'error'   => 'Error interno al buscar cursos'
+                'error'   => 'Error interno al buscar usuario'
             ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
             exit;
         }
