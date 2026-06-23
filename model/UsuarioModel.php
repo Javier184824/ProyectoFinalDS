@@ -68,4 +68,11 @@ class UsuarioModel
         $stmt = $this->pdo->prepare("UPDATE Usuario SET correo = ? WHERE idUsuario = ?");
         return $stmt->execute([$nuevoCorreo, $idUsuario]);
     }
+
+    public function cambiarContrasena(string $correo, string $nuevaContrasena): bool
+    {
+        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $stmt = $this->pdo->prepare("UPDATE Usuario SET contrasena = ? WHERE correo = ?");
+        return $stmt->execute([$nuevaContrasena, $correo]);
+    }
 }
