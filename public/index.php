@@ -123,6 +123,10 @@ $router->add('GET', '/api/cursos/todos', function () {
     (new CursoController())->listarTodos();
 });
 
+$router->add('GET', '/api/cursos/{idCurso}/estudiantes', function (string $idCurso) {
+    (new CursoController())->listarEstudiantes((int) $idCurso);
+});
+
 $router->add('POST', '/api/cursos/unirse', function () {
     (new CursoController())->unirseACurso();
 });

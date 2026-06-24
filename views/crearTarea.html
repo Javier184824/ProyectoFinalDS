@@ -130,6 +130,152 @@
             accent-color: #6750A4; width: 16px; height: 16px;
         }
 
+        /* seccion de grupos inline en crear tarea */
+        .seccion-grupos-inline {
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .seccion-grupos-inline > .grupos-titulo {
+            font-size: 0.85rem;
+            color: #575757;
+            font-weight: 600;
+        }
+
+        .bloque-grupo-inline {
+            background-color: #BFB7CC;
+            border-radius: 10px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .bloque-grupo-inline-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bloque-grupo-inline-header input[type="text"] {
+            flex: 1;
+            padding: 6px 10px;
+            border: none; border-radius: 6px;
+            background-color: #fff;
+            font-size: 0.88rem; color: #1C1B1F;
+            outline: none;
+        }
+
+        .bloque-grupo-inline-header input:focus { box-shadow: 0 0 0 2px #6750A4; }
+
+        .btn-quitar-grupo-inline {
+            background-color: #FF383C; color: #fff;
+            border: none; border-radius: 6px;
+            padding: 5px 10px; font-size: 0.75rem;
+            cursor: pointer; flex-shrink: 0;
+        }
+
+        /* miembros dentro del bloque */
+        .lista-miembros-inline {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .fila-miembro-inline {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #D9D9D9;
+            border-radius: 8px;
+            padding: 7px 10px;
+        }
+
+        .fila-miembro-inline .datos-est { flex: 1; }
+        .fila-miembro-inline .datos-est .carnet-est { font-size: 0.82rem; color: #1C1B1F; font-weight: 500; }
+        .fila-miembro-inline .datos-est .nombre-est  { font-size: 0.72rem; color: #575757; }
+
+        .btn-quitar-miembro-inline {
+            background-color: #FF383C; color: #fff;
+            border: none; border-radius: 6px;
+            padding: 4px 9px; font-size: 0.72rem;
+            cursor: pointer; flex-shrink: 0;
+        }
+
+        /* buscador dropdown inline */
+        .buscador-inline-wrap { position: relative; }
+
+        .buscador-inline-wrap input {
+            width: 100%;
+            padding: 7px 10px;
+            border: none; border-radius: 8px;
+            background-color: #fff;
+            font-size: 0.84rem; color: #1C1B1F;
+            outline: none;
+        }
+
+        .buscador-inline-wrap input:focus { box-shadow: 0 0 0 2px #6750A4; }
+
+        .dropdown-inline {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0; right: 0;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 50;
+            display: none;
+        }
+
+        .dropdown-inline.abierto { display: block; }
+
+        .item-drop {
+            padding: 9px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .item-drop:last-child { border-bottom: none; }
+        .item-drop:hover:not(.ocupado) { background-color: #EADDFF; }
+        .item-drop.ocupado { opacity: 0.5; cursor: not-allowed; }
+
+        .item-drop .item-nombre { font-size: 0.84rem; color: #1C1B1F; font-weight: 500; }
+        .item-drop .item-sub    { font-size: 0.71rem; color: #575757; }
+
+        .badge-libre-inline {
+            font-size: 0.67rem; background-color: #34C759;
+            color: #fff; border-radius: 10px;
+            padding: 2px 7px; flex-shrink: 0;
+        }
+
+        .badge-ocupado-inline {
+            font-size: 0.67rem; background-color: #FF383C;
+            color: #fff; border-radius: 10px;
+            padding: 2px 7px; flex-shrink: 0; white-space: nowrap;
+        }
+
+        .drop-vacio {
+            padding: 10px 12px;
+            font-size: 0.82rem; color: #888;
+            text-align: center;
+        }
+
+        .btn-agregar-grupo-inline {
+            background-color: #6B5B95; color: #fff;
+            border: none; border-radius: 8px;
+            padding: 7px 14px; font-size: 0.82rem;
+            cursor: pointer; align-self: flex-start;
+        }
+
+        .btn-agregar-grupo-inline:hover { background-color: #4F378A; }
+
         /* seccion de grupos */
         .seccion-grupos {
             display: none;
@@ -308,9 +454,16 @@
                     <input type="checkbox" id="checkGrupal">
                     <label for="checkGrupal">Tarea grupal</label>
                 </div>
-                <p id="avisoGrupal" style="display:none; font-size:0.78rem; color:#575757; padding: 0 0 4px 0;">
-                    Los grupos se configuran desde "Gestionar grupos" después de crear la tarea.
-                </p>
+
+                <!-- seccion grupos inline: aparece al marcar el checkbox -->
+                <div class="seccion-grupos-inline" id="seccionGruposInline">
+                    <span class="grupos-titulo">Grupos de trabajo</span>
+                    <div id="contenedorGruposInline"></div>
+                    <button type="button" class="btn-agregar-grupo-inline" id="btnAgregarGrupoInline">+ Agregar grupo</button>
+                    <p style="font-size:0.75rem; color:#575757; margin-top:-4px;">
+                        También puedes gestionar grupos después desde la pantalla de entregas.
+                    </p>
+                </div>
             </div>
 
             <p class="mensaje-error" id="mensajeError"></p>
@@ -340,8 +493,16 @@
         const checkGrupal  = document.getElementById('checkGrupal');
         // Muestra un aviso informativo cuando la tarea es grupal
         checkGrupal.addEventListener('change', () => {
-            const aviso = document.getElementById('avisoGrupal');
-            aviso.style.display = checkGrupal.checked ? 'block' : 'none';
+            const sec = document.getElementById('seccionGruposInline');
+            sec.style.display = checkGrupal.checked ? 'flex' : 'none';
+            if (!checkGrupal.checked) {
+                // limpiar grupos si desmarca
+                document.getElementById('contenedorGruposInline').innerHTML = '';
+                gruposInline = [];
+                estudiantesDisponibles = [];
+            } else if (estudiantesDisponibles.length === 0) {
+                cargarEstudiantesParaGrupos();
+            }
         });
 
         // navegacion
@@ -395,6 +556,209 @@
             }
         }
 
+        // ── estado de grupos inline ───────────────────────────
+        let gruposInline = [];          // [{nombre, miembros:[{idUsuario,carnet,nombre}]}]
+        let estudiantesDisponibles = []; // lista que llega del backend
+
+        // carga los estudiantes del curso seleccionado para el dropdown
+        async function cargarEstudiantesParaGrupos() {
+            const idCurso = selectCurso.value;
+            if (!idCurso) return;
+            try {
+                const res = await fetch(BASE + '/api/cursos/' + idCurso + '/estudiantes');
+                const data = await res.json().catch(() => null);
+                if (data && data.estudiantes) {
+                    estudiantesDisponibles = data.estudiantes;
+                }
+            } catch (_) {}
+        }
+
+        
+        // cuando cambia el curso, recargar estudiantes si la seccion de grupos esta abierta
+        selectCurso.addEventListener('change', () => {
+            if (checkGrupal.checked) {
+                estudiantesDisponibles = [];
+                cargarEstudiantesParaGrupos();
+            }
+        });
+
+        // obtener IDs de estudiantes ya asignados en otros grupos (excluye el grupo actual)
+        function obtenerAsignadosInline(excluirIdx) {
+            const set = new Set();
+            gruposInline.forEach((g, i) => {
+                if (i === excluirIdx) return;
+                g.miembros.forEach(m => set.add(Number(m.idUsuario)));
+            });
+            return set;
+        }
+
+        // renderiza el dropdown de estudiantes para un bloque de grupo
+        function renderDropdownInline(dropdown, q, grupoIdx, listaMiembrosEl, inputBuscar) {
+            dropdown.innerHTML = '';
+
+            const enEsteGrupo = new Set(gruposInline[grupoIdx].miembros.map(m => Number(m.idUsuario)));
+            const enOtroGrupo = obtenerAsignadosInline(grupoIdx);
+
+            const candidatos = estudiantesDisponibles.filter(e => {
+                if (enEsteGrupo.has(Number(e.idUsuario))) return false;
+                if (!q) return true;
+                return (
+                    (e.nombre  || '').toLowerCase().includes(q) ||
+                    (e.carnet  || '').toLowerCase().includes(q) ||
+                    (e.correo  || '').toLowerCase().includes(q)
+                );
+            });
+
+            if (candidatos.length === 0) {
+                dropdown.innerHTML = '<p class="drop-vacio">' +
+                    (estudiantesDisponibles.length === 0
+                        ? 'Seleccione un curso con estudiantes matriculados'
+                        : 'Sin resultados') +
+                    '</p>';
+                dropdown.classList.add('abierto');
+                return;
+            }
+
+            candidatos.forEach(e => {
+                const ocupado = enOtroGrupo.has(Number(e.idUsuario));
+                const item = document.createElement('div');
+                item.className = 'item-drop' + (ocupado ? ' ocupado' : '');
+
+                const info = document.createElement('div');
+                info.innerHTML = '<div class="item-nombre">' + e.nombre + '</div>' +
+                                 '<div class="item-sub">' + (e.carnet || '') + ' · ' + (e.correo || '') + '</div>';
+
+                const badge = document.createElement('span');
+                badge.className   = ocupado ? 'badge-ocupado-inline' : 'badge-libre-inline';
+                badge.textContent = ocupado ? 'Ya en grupo' : 'Disponible';
+
+                item.appendChild(info);
+                item.appendChild(badge);
+
+                if (!ocupado) {
+                    item.onclick = () => {
+                        gruposInline[grupoIdx].miembros.push({
+                            idUsuario: e.idUsuario,
+                            carnet:    e.carnet,
+                            nombre:    e.nombre
+                        });
+                        renderMiembrosInline(grupoIdx, listaMiembrosEl);
+                        dropdown.classList.remove('abierto');
+                        inputBuscar.value = '';
+                    };
+                }
+                dropdown.appendChild(item);
+            });
+
+            dropdown.classList.add('abierto');
+        }
+
+        // renderiza la lista de miembros de un grupo
+        function renderMiembrosInline(grupoIdx, contenedor) {
+            contenedor.innerHTML = '';
+            const miembros = gruposInline[grupoIdx].miembros;
+            if (miembros.length === 0) return;
+            miembros.forEach((m, mIdx) => {
+                const fila = document.createElement('div');
+                fila.className = 'fila-miembro-inline';
+
+                const datos = document.createElement('div');
+                datos.className = 'datos-est';
+                datos.innerHTML = '<div class="carnet-est">' + (m.carnet || '') + '</div>' +
+                                  '<div class="nombre-est">' + (m.nombre || '') + '</div>';
+
+                const btnQ = document.createElement('button');
+                btnQ.type      = 'button';
+                btnQ.className = 'btn-quitar-miembro-inline';
+                btnQ.textContent = 'Quitar';
+                btnQ.onclick = () => {
+                    gruposInline[grupoIdx].miembros.splice(mIdx, 1);
+                    renderMiembrosInline(grupoIdx, contenedor);
+                };
+
+                fila.appendChild(datos);
+                fila.appendChild(btnQ);
+                contenedor.appendChild(fila);
+            });
+        }
+
+        // crea el bloque visual de un grupo en el contenedor
+        function crearBloqueGrupoInline(grupoIdx) {
+            const contenedor = document.getElementById('contenedorGruposInline');
+
+            const bloque = document.createElement('div');
+            bloque.className = 'bloque-grupo-inline';
+            bloque.dataset.idx = grupoIdx;
+
+            // header: input nombre + boton quitar
+            const header = document.createElement('div');
+            header.className = 'bloque-grupo-inline-header';
+
+            const inputNombre = document.createElement('input');
+            inputNombre.type        = 'text';
+            inputNombre.placeholder = 'Nombre del grupo ' + (grupoIdx + 1);
+            inputNombre.value       = gruposInline[grupoIdx].nombre;
+            inputNombre.oninput     = () => { gruposInline[grupoIdx].nombre = inputNombre.value.trim(); };
+
+            const btnQuitar = document.createElement('button');
+            btnQuitar.type      = 'button';
+            btnQuitar.className = 'btn-quitar-grupo-inline';
+            btnQuitar.textContent = 'Quitar grupo';
+            btnQuitar.onclick = () => {
+                gruposInline.splice(grupoIdx, 1);
+                // re-renderizar todos los bloques
+                contenedor.innerHTML = '';
+                gruposInline.forEach((_, i) => crearBloqueGrupoInline(i));
+            };
+
+            header.appendChild(inputNombre);
+            header.appendChild(btnQuitar);
+
+            // lista de miembros
+            const listaMiembros = document.createElement('div');
+            listaMiembros.className = 'lista-miembros-inline';
+            renderMiembrosInline(grupoIdx, listaMiembros);
+
+            // buscador
+            const wrap = document.createElement('div');
+            wrap.className = 'buscador-inline-wrap';
+
+            const inputBuscar = document.createElement('input');
+            inputBuscar.type        = 'text';
+            inputBuscar.placeholder = 'Buscar estudiante por nombre, carnet o correo...';
+
+            const dropdown = document.createElement('div');
+            dropdown.className = 'dropdown-inline';
+
+            wrap.appendChild(inputBuscar);
+            wrap.appendChild(dropdown);
+
+            inputBuscar.addEventListener('input', () => {
+                renderDropdownInline(dropdown, inputBuscar.value.trim().toLowerCase(),
+                    grupoIdx, listaMiembros, inputBuscar);
+            });
+            inputBuscar.addEventListener('focus', () => {
+                renderDropdownInline(dropdown, inputBuscar.value.trim().toLowerCase(),
+                    grupoIdx, listaMiembros, inputBuscar);
+            });
+            document.addEventListener('click', (e) => {
+                if (!wrap.contains(e.target)) dropdown.classList.remove('abierto');
+            });
+
+            bloque.appendChild(header);
+            bloque.appendChild(listaMiembros);
+            bloque.appendChild(wrap);
+            contenedor.appendChild(bloque);
+        }
+
+        // boton agregar grupo
+        document.getElementById('btnAgregarGrupoInline').addEventListener('click', () => {
+            const idx = gruposInline.length;
+            gruposInline.push({ nombre: '', miembros: [] });
+            crearBloqueGrupoInline(idx);
+        });
+
+        // ── boton Crear ──────────────────────────────────────
         document.getElementById('btnCrear').addEventListener('click', async () => {
             const idCurso      = selectCurso.value;
             const nombre       = document.getElementById('inputNombre').value.trim();
@@ -417,7 +781,17 @@
                 return;
             }
 
-            // el backend exige fechaEntrega posterior a la creacion, enviamos fecha y hora
+            // validar que los grupos tengan nombre si se crearon
+            if (esGrupal && gruposInline.length > 0) {
+                for (let i = 0; i < gruposInline.length; i++) {
+                    if (!gruposInline[i].nombre) {
+                        mensajeError.textContent   = 'El grupo ' + (i + 1) + ' no tiene nombre.';
+                        mensajeError.style.display = 'block';
+                        return;
+                    }
+                }
+            }
+
             const cuerpo = {
                 idCurso: parseInt(idCurso, 10),
                 nombre,
@@ -442,6 +816,45 @@
                     mensajeError.textContent   = (data && data.error) ? data.error : 'Error al guardar la tarea.';
                     mensajeError.style.display = 'block';
                     return;
+                }
+
+                // si hay grupos inline, crearlos con el idTarea devuelto
+                const idTareaCreada = data.idTarea || idTarea;
+
+                if (esGrupal && gruposInline.length > 0 && idTareaCreada) {
+                    for (const grupo of gruposInline) {
+                        try {
+                            // 1. crear el grupo
+                            const resGrupo = await fetch(
+                                BASE + '/api/tareas/' + idTareaCreada + '/grupos',
+                                {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ nombre: grupo.nombre })
+                                }
+                            );
+                            const dataGrupo = await resGrupo.json().catch(() => null);
+                            const idGrupo   = dataGrupo && dataGrupo.idGrupo ? dataGrupo.idGrupo : null;
+
+                            // 2. agregar miembros uno por uno
+                            if (idGrupo && grupo.miembros.length > 0) {
+                                for (const m of grupo.miembros) {
+                                    await fetch(
+                                        BASE + '/api/tareas/' + idTareaCreada + '/grupos',
+                                        {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({
+                                                idGrupo: idGrupo,
+                                                accion:  'agregar',
+                                                carnet:  m.carnet
+                                            })
+                                        }
+                                    ).catch(() => {});
+                                }
+                            }
+                        } catch (_) {}
+                    }
                 }
 
                 window.location.href = BASE + '/menuProfesor';

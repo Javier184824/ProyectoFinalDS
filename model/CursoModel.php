@@ -65,6 +65,23 @@ class CursoModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-
+    public function obtenerEstudiantesPorCurso(int $idCurso): array
+    {
+        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $stmt = $this->pdo->prepare("
+            SELECT u.idUsuario,
+                   u.nombreUsuario AS carnet,
+                   u.nombre,
+                   u.correo,
+                   NULL AS grupoActual
+            FROM EstudianteXCurso ec
+            JOIN Usuario u ON u.idUsuario = ec.idUsuario
+            WHERE ec.idCurso = ?
+              AND u.rol = 'ESTUDIANTE'
+            ORDER BY u.nombre
+        ");
+        $stmt->execute([$idCurso]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
     
 }
