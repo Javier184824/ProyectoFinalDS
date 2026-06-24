@@ -1,0 +1,79 @@
+
+<div style="min-height:420px; background-color:#4B3B8C; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:32px 16px; gap:12px; border-radius:var(--border-radius-lg);">
+
+  <div id="paso1" style="background:#EADDFF; border-radius:16px; width:380px; overflow:hidden;">
+    <div style="background:#6750A4; text-align:center; padding:14px 0;">
+      <p style="color:#fff; font-size:1.05rem; font-weight:500; margin:0;">Recuperar contraseña</p>
+    </div>
+    <div style="padding:24px 28px 8px; display:flex; flex-direction:column; gap:6px;">
+      <p style="font-size:0.82rem; color:#49454F; margin:0 0 8px;">Ingrese su correo y le enviaremos un enlace para restablecer su contraseña.</p>
+      <label style="font-size:0.85rem; color:#1C1B1F; display:block; margin-bottom:4px;">Correo</label>
+      <input id="inputCorreo" type="email" placeholder="ejemplo@correo.com" style="width:100%; padding:8px 12px; border:none; border-radius:8px; background:#fff; font-size:0.9rem; color:#1C1B1F; outline:none; box-sizing:border-box;">
+    </div>
+    <p id="errorMsg" style="display:none; color:#FF383C; font-size:0.78rem; text-align:center; padding:6px 28px 0; margin:0;"></p>
+    <div style="padding:16px 28px 20px; display:flex; justify-content:space-between; align-items:center;">
+      <a href="#" onclick="return false;" style="font-size:0.78rem; color:#316AFB; text-decoration:none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">← Volver al inicio</a>
+      <button id="btnEnviar" onclick="enviarEnlace()" style="background:#34C759; color:#fff; border:none; border-radius:20px; padding:10px 28px; font-size:0.9rem; cursor:pointer;" onmouseover="this.style.background='#28a745'" onmouseout="this.style.background='#34C759'">Enviar enlace</button>
+    </div>
+  </div>
+
+  <div id="paso2" style="display:none; background:#EADDFF; border-radius:16px; width:380px; overflow:hidden;">
+    <div style="background:#6750A4; text-align:center; padding:14px 0;">
+      <p style="color:#fff; font-size:1.05rem; font-weight:500; margin:0;">Revise su correo</p>
+    </div>
+    <div style="padding:28px 28px 24px; display:flex; flex-direction:column; align-items:center; gap:14px; text-align:center;">
+      <div style="width:56px; height:56px; border-radius:50%; background:#6750A4; display:flex; align-items:center; justify-content:center;">
+        <i class="ti ti-mail" style="font-size:26px; color:#fff;" aria-hidden="true"></i>
+      </div>
+      <p style="font-size:0.9rem; color:#1C1B1F; margin:0; line-height:1.5;">Se envió un enlace a <strong id="correoMostrado" style="font-weight:500;"></strong>. Revise su bandeja de entrada y siga las instrucciones.</p>
+      <p style="font-size:0.78rem; color:#49454F; margin:0;">¿No llegó? Revise su carpeta de spam o</p>
+      <button onclick="reenviar()" style="background:transparent; color:#316AFB; border:none; font-size:0.82rem; cursor:pointer; padding:0; text-decoration:underline;">reenvíe el correo</button>
+    </div>
+    <div style="padding:0 28px 20px; display:flex; justify-content:center;">
+      <a href="#" onclick="volver(); return false;" style="font-size:0.82rem; color:#316AFB; text-decoration:none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">← Volver al inicio de sesión</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function validarCorreo(c) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(c); }
+
+function enviarEnlace() {
+  const correo = document.getElementById('inputCorreo').value.trim();
+  const err = document.getElementById('errorMsg');
+  err.style.display = 'none';
+  if (!correo) {
+    err.textContent = 'Por favor, ingrese su correo.';
+    err.style.display = 'block';
+    return;
+  }
+  if (!validarCorreo(correo)) {
+    err.textContent = 'Ingrese un correo válido.';
+    err.style.display = 'block';
+    return;
+  }
+  document.getElementById('correoMostrado').textContent = correo;
+  document.getElementById('paso1').style.display = 'none';
+  document.getElementById('paso2').style.display = 'block';
+}
+
+function reenviar() {
+  const btn = event.target;
+  btn.textContent = '✓ Reenviado';
+  btn.style.color = '#28a745';
+  btn.disabled = true;
+  setTimeout(() => { btn.textContent = 'reenvíe el correo'; btn.style.color = '#316AFB'; btn.disabled = false; }, 3000);
+}
+
+function volver() {
+  document.getElementById('paso2').style.display = 'none';
+  document.getElementById('paso1').style.display = 'block';
+  document.getElementById('inputCorreo').value = '';
+  document.getElementById('errorMsg').style.display = 'none';
+}
+
+document.getElementById('inputCorreo').addEventListener('keydown', e => {
+  if (e.key === 'Enter') enviarEnlace();
+});
+</script>
