@@ -329,8 +329,16 @@ $router->add('GET', '/menuProfesor', function () {
     exit;
 });
 
-// Dirige a la página de menuProfesor
+// Dirige a la página de recuperarContrasena
 $router->add('GET', '/recuperarContrasena', function () {
+    // Para el HTML desactivamos el Content-Type JSON que pusimos arriba
+    header('Content-Type: text/html; charset=utf-8');
+    require_once __DIR__ . '/../views/recuperarContrasena.html';
+    exit;
+});
+
+// Dirige a la página de nuevaContrasena
+$router->add('GET', '/nuevaContrasena', function () {
     // Para el HTML desactivamos el Content-Type JSON que pusimos arriba
     header('Content-Type: text/html; charset=utf-8');
     require_once __DIR__ . '/../views/recuperarContrasena.html';
