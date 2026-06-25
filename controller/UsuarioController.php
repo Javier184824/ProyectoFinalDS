@@ -395,7 +395,9 @@ class UsuarioController
             echo json_encode([
                 "success" => true,
                 "message" => "Código enviado correctamente",
-                "codigo" => $codigo
+                "correo" => $correo, 
+                "codigo" => $codigo,
+                "token" => bin2hex(random_bytes(16))
             ]);
 
         } catch (Exception $e) {

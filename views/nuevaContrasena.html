@@ -132,6 +132,7 @@
         // obtener el token de la URL
         const params = new URLSearchParams(window.location.search);
         const token  = params.get('token');
+        const correo = params.get('correo');
 
         // si no hay token, redirigir al login
         if (!token) {
@@ -164,10 +165,10 @@
             }
 
             try {
-                const response = await fetch(BASE + '/api/auth/nuevaContrasena', {
+                const response = await fetch(BASE + '/api/auth/cambiarContrasena', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token, contrasena })
+                    body: JSON.stringify({ correo, contrasena })
                 });
 
                 const data = await response.json().catch(() => null);
