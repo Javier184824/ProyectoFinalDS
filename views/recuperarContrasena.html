@@ -260,7 +260,7 @@
                   return;
                 }
                 
-                window.location.href = BASE + '/nuevaContrasena?token=' + encodeURIComponent(tokenGenerado) + '&correo=' + encodeURIComponent(correoAEnviar);
+                window.location.href = BASE + '/nuevaContrasena?token=' + encodeURIComponent(tokenGenerado) + '&correo=' + correoAEnviar;
 
             } catch (error) {
                 mensajeError.textContent = 'Error de conexión. Intente de nuevo.';
