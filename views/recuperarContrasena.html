@@ -249,10 +249,8 @@
             }
 
             try {
-                const response = await fetch(BASE + '/recuperarContrasena', {
-                    method: 'GET',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ codigo })
+                const response = await fetch(BASE + '/api/auth/recCont', {
+                    headers: { 'Content-Type': 'application/json' }
                 });
 
                 const data = await response.json().catch(() => null);
