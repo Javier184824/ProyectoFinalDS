@@ -181,7 +181,6 @@
     <script src="js/config.js"></script>
     <script>
         const BASE = window.API_BASE;
-        let codigoRecibido = "0"
 
         function validarCorreo(correo) {
             return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
@@ -249,14 +248,28 @@
                 return;
             }
 
-            if (codigo != codigoRecibido) {
-                mensajeError.textContent = 'Código incorrecto';
-                mensajeError.style.display = 'block';
-                return;
-            }
-
             try {
-                // redirigir a pantalla de nueva contraseña, pasando el token
+                const response = await fetch(BASE + '/api/auth/recCont', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ codigo })
+                });
+
+                const data = await response.json().catch(() => null);
+
+                if (!response.ok) {
+                  const msg = data && data.error ? data.error : 'No se pudo enviar el código.';
+                  mensajeError.textContent = msg;
+                  mensajeError.style.display = 'block';
+                  return;
+                }
+
+                if (codigo != data.codigo) {
+                  mensajeError.textContent = 'Código incorrecto';
+                  mensajeError.style.display = 'block';
+                  return;
+                }
+
                 window.location.href = BASE + '/nuevaContrasena?token=' + encodeURIComponent(data.token);
 
             } catch (error) {
@@ -294,8 +307,6 @@
                     btn.style.color = '#316AFB';
                     btn.disabled = false;
                 }, 3000);
-
-                //codigoRecibido = data.codigo;
 
             } catch (error) {
                 mensajeError.textContent = 'Error de conexión. Intente de nuevo.';
