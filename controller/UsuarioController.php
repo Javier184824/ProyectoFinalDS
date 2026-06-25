@@ -363,6 +363,49 @@ class UsuarioController
         }
     }
 
+    public function verificarCodigo(): void
+    {
+        header('Content-Type: application/json; charset=utf-8');
+
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        if (!isset($data['correo']) || trim($data['correo']) === '') {
+            echo json_encode([
+                "success" => false,
+                "error" => "Correo requerido"
+            ]);
+            return;
+        }
+
+        $correo = trim($data['correo']);
+
+        try {
+            $codigo = (string) random_int(100000, 999999);
+
+            $enviado = $this->enviarCorreoRecuperacion($correo, $codigo);
+
+            if (!$enviado) {
+                echo json_encode([
+                    "success" => false,
+                    "error" => "No se pudo enviar el correo"
+                ]);
+                return;
+            }
+
+            echo json_encode([
+                "success" => true,
+                "message" => "Código enviado correctamente",
+                "codigo" => $codigo
+            ]);
+
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "error" => $e->getMessage()
+            ]);
+        }
+    }
+
     public function verificarCorreo(): void
     {
         session_start();

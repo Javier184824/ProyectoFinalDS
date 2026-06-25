@@ -181,6 +181,7 @@
     <script src="js/config.js"></script>
     <script>
         const BASE = window.API_BASE;
+        let codigoRecibido = ""
 
         function validarCorreo(correo) {
             return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
@@ -221,13 +222,12 @@
                     return;
                 }
 
+                codigoRecibido = data.codigo
+
                 document.getElementById('correoMostrado').textContent = correo;
                 document.getElementById('paso1').style.display = 'none';
                 document.getElementById('paso2').style.display = 'block';
                 document.getElementById('inputCodigo').focus();
-
-                //codigoRecibido = data.codigo;
-
             } catch (error) {
                 mensajeError.textContent = 'Error de conexión. Intente de nuevo.';
                 mensajeError.style.display = 'block';
@@ -249,20 +249,7 @@
             }
 
             try {
-                const response = await fetch(BASE + '/api/auth/recCont', {
-                    headers: { 'Content-Type': 'application/json' }
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                  const msg = data && data.error ? data.error : 'No se pudo enviar el código.';
-                  mensajeError.textContent = msg;
-                  mensajeError.style.display = 'block';
-                  return;
-                }
-
-                if (codigo != data.codigo) {
+                if (codigo != codigoRecibido) {
                   mensajeError.textContent = 'Código incorrecto';
                   mensajeError.style.display = 'block';
                   return;
