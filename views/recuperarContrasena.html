@@ -210,7 +210,7 @@
                 const response = await fetch(BASE + '/api/auth/recCont', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ codigo })
+                    body: JSON.stringify({ correo , codigo })
                 });
 
                 const data = await response.json().catch(() => null);
@@ -274,7 +274,7 @@
                 await fetch(BASE + '/api/auth/recCont', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ codigo })
+                    body: JSON.stringify({ correo , codigo })
                 });
 
                 const data = await response.json().catch(() => null);
