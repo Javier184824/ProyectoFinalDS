@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nueva contraseña</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            min-height: 100vh;
+            background-color: #4B3B8C;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: sans-serif;
+            gap: 12px;
+        }
+
+        .tarjeta {
+            background-color: #EADDFF;
+            border-radius: 16px;
+            width: 380px;
+            overflow: hidden;
+        }
+
+        .tarjeta-header {
+            background-color: #6750A4;
+            text-align: center;
+            padding: 14px 0;
+        }
+
+        .tarjeta-header h1 {
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .tarjeta-cuerpo {
+            padding: 24px 28px 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .tarjeta-cuerpo .descripcion {
+            font-size: 0.82rem;
+            color: #49454F;
+        }
+
+        .campo label {
+            display: block;
+            font-size: 0.85rem;
+            color: #1C1B1F;
+            margin-bottom: 4px;
+        }
+
+        .campo input {
+            width: 100%;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            background-color: #fff;
+            font-size: 0.9rem;
+            color: #1C1B1F;
+            outline: none;
+        }
+
+        .campo input:focus {
+            box-shadow: 0 0 0 2px #6750A4;
+        }
+
+        .mensaje-error {
+            display: none;
+            color: #FF383C;
+            font-size: 0.78rem;
+            text-align: center;
+            padding: 0 28px 10px;
+        }
+
+        .tarjeta-pie {
+            padding: 4px 28px 20px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .btn-enviar {
+            background-color: #34C759;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 28px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .btn-enviar:hover { background-color: #28a745; }
+    </style>
+</head>
+<body>
+
+    <div class="tarjeta">
+        <div class="tarjeta-header">
+            <h1>Nueva contraseña</h1>
+        </div>
+
+        <div class="tarjeta-cuerpo">
+            <p class="descripcion">Ingrese y confirme su nueva contraseña.</p>
+            <div class="campo">
+                <label for="inputContrasena">Nueva contraseña</label>
+                <input type="password" id="inputContrasena" name="contrasena" autocomplete="new-password">
+            </div>
+            <div class="campo">
+                <label for="inputConfirmar">Confirmar contraseña</label>
+                <input type="password" id="inputConfirmar" name="confirmar" autocomplete="new-password">
+            </div>
+        </div>
+
+        <p class="mensaje-error" id="mensajeError"></p>
+
+        <div class="tarjeta-pie">
+            <button type="button" class="btn-enviar" id="btnGuardar">Guardar</button>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script>
+        const BASE = window.API_BASE;
+
+        // obtener el token de la URL
+        const params = new URLSearchParams(window.location.search);
+        const token  = params.get('token');
+
+        // si no hay token, redirigir al login
+        if (!token) {
+            window.location.href = BASE + '/login';
+        }
+
+        document.getElementById('btnGuardar').addEventListener('click', async () => {
+            const contrasena   = document.getElementById('inputContrasena').value.trim();
+            const confirmar    = document.getElementById('inputConfirmar').value.trim();
+            const mensajeError = document.getElementById('mensajeError');
+
+            mensajeError.style.display = 'none';
+
+            if (!contrasena || !confirmar) {
+                mensajeError.textContent = 'Por favor, complete todos los campos.';
+                mensajeError.style.display = 'block';
+                return;
+            }
+
+            if (contrasena !== confirmar) {
+                mensajeError.textContent = 'Las contraseñas no coinciden.';
+                mensajeError.style.display = 'block';
+                return;
+            }
+
+            if (contrasena.length < 8) {
+                mensajeError.textContent = 'La contraseña debe tener al menos 8 caracteres.';
+                mensajeError.style.display = 'block';
+                return;
+            }
+
+            try {
+                const response = await fetch(BASE + '/api/auth/nuevaContrasena', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token, contrasena })
+                });
+
+                const data = await response.json().catch(() => null);
+
+                if (!response.ok) {
+                    const msg = data && data.error ? data.error : 'No se pudo actualizar la contraseña.';
+                    mensajeError.textContent = msg;
+                    mensajeError.style.display = 'block';
+                    return;
+                }
+
+                window.location.href = BASE + '/login?contrasenaCambiada=1';
+
+            } catch (error) {
+                mensajeError.textContent = 'Error de conexión. Intente de nuevo.';
+                mensajeError.style.display = 'block';
+            }
+        });
+
+        // permitir Enter para guardar
+        document.getElementById('inputConfirmar').addEventListener('keydown', e => {
+            if (e.key === 'Enter') document.getElementById('btnGuardar').click();
+        });
+    </script>
+</body>
+</html>

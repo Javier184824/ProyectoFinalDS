@@ -37,7 +37,6 @@
             font-weight: 600;
         }
 
-        /* ── Paso 1: ingresar correo ── */
         .tarjeta-cuerpo {
             padding: 24px 28px 8px;
             display: flex;
@@ -107,53 +106,24 @@
 
         .btn-enviar:hover { background-color: #28a745; }
 
-        /* ── Paso 2: confirmación ── */
-        .tarjeta-confirmacion {
-            padding: 28px 28px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 14px;
-            text-align: center;
-        }
-
-        .icono-correo {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background-color: #6750A4;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 26px;
-            color: #fff;
-        }
-
-        .tarjeta-confirmacion .mensaje-principal {
-            font-size: 0.9rem;
-            color: #1C1B1F;
-            line-height: 1.5;
-        }
-
-        .tarjeta-confirmacion .mensaje-spam {
-            font-size: 0.78rem;
+        /* ── Paso 2: ingresar código ── */
+        .aviso-codigo {
+            font-size: 0.82rem;
             color: #49454F;
+            padding: 16px 28px 0;
+            text-align: center;
         }
 
         .btn-reenviar {
             background: transparent;
             color: #316AFB;
             border: none;
-            font-size: 0.82rem;
+            font-size: 0.78rem;
             cursor: pointer;
             padding: 0;
             text-decoration: underline;
-        }
-
-        .tarjeta-pie-centro {
-            padding: 0 28px 20px;
-            display: flex;
-            justify-content: center;
+            display: block;
+            margin: 4px auto 0;
         }
     </style>
 </head>
@@ -166,39 +136,45 @@
         </div>
 
         <div class="tarjeta-cuerpo">
-            <p class="descripcion">Ingrese su correo y le enviaremos un enlace para restablecer su contraseña.</p>
+            <p class="descripcion">Ingrese su correo y le enviaremos un código para restablecer su contraseña.</p>
             <div class="campo">
                 <label for="inputCorreo">Correo</label>
                 <input type="email" id="inputCorreo" name="correo" autocomplete="email" placeholder="ejemplo@correo.com">
             </div>
         </div>
 
-        <p class="mensaje-error" id="mensajeError"></p>
+        <p class="mensaje-error" id="mensajeError1"></p>
 
         <div class="tarjeta-pie">
             <a href="login" class="enlace-volver">← Volver al inicio</a>
-            <button type="button" class="btn-enviar" id="btnEnviar">Enviar enlace</button>
+            <button type="button" class="btn-enviar" id="btnEnviar">Enviar código</button>
         </div>
     </div>
 
-    <!-- Paso 2: confirmación de envío -->
+    <!-- Paso 2: ingresar código recibido -->
     <div class="tarjeta" id="paso2" style="display:none;">
         <div class="tarjeta-header">
-            <h1>Revise su correo</h1>
+            <h1>Ingrese el código</h1>
         </div>
 
-        <div class="tarjeta-confirmacion">
-            <div class="icono-correo">✉</div>
-            <p class="mensaje-principal">
-                Se envió un enlace a <strong id="correoMostrado"></strong>.
-                Revise su bandeja de entrada y siga las instrucciones.
-            </p>
-            <p class="mensaje-spam">¿No llegó? Revise su carpeta de spam o</p>
-            <button type="button" class="btn-reenviar" id="btnReenviar">reenvíe el correo</button>
+        <div class="tarjeta-cuerpo">
+            <p class="descripcion">Se envió un código a <strong id="correoMostrado"></strong>. Ingréselo a continuación.</p>
+            <div class="campo">
+                <label for="inputCodigo">Código</label>
+                <input type="text" id="inputCodigo" name="codigo" autocomplete="one-time-code" placeholder="Ej: 123456" maxlength="10">
+            </div>
         </div>
 
-        <div class="tarjeta-pie-centro">
-            <a href="login" class="enlace-volver">← Volver al inicio de sesión</a>
+        <p class="mensaje-error" id="mensajeError2"></p>
+
+        <p class="aviso-codigo">
+            ¿No llegó? Revise su carpeta de spam o
+            <button type="button" class="btn-reenviar" id="btnReenviar">reenvíe el código</button>
+        </p>
+
+        <div class="tarjeta-pie">
+            <a href="#" id="btnVolverPaso1" class="enlace-volver">← Cambiar correo</a>
+            <button type="button" class="btn-enviar" id="btnVerificar">Verificar</button>
         </div>
     </div>
 
@@ -210,9 +186,10 @@
             return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
         }
 
+        // ── Paso 1: enviar código al correo ──
         document.getElementById('btnEnviar').addEventListener('click', async () => {
             const correo       = document.getElementById('inputCorreo').value.trim();
-            const mensajeError = document.getElementById('mensajeError');
+            const mensajeError = document.getElementById('mensajeError1');
 
             mensajeError.style.display = 'none';
 
@@ -228,17 +205,19 @@
                 return;
             }
 
+            let codigoRecibido = "0"
+
             try {
                 const response = await fetch(BASE + '/api/auth/recCont', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ correo })
+                    body: JSON.stringify({ codigo })
                 });
 
                 const data = await response.json().catch(() => null);
 
                 if (!response.ok) {
-                    const msg = data && data.error ? data.error : 'No se pudo enviar el enlace.';
+                    const msg = data && data.error ? data.error : 'No se pudo enviar el código.';
                     mensajeError.textContent = msg;
                     mensajeError.style.display = 'block';
                     return;
@@ -247,6 +226,9 @@
                 document.getElementById('correoMostrado').textContent = correo;
                 document.getElementById('paso1').style.display = 'none';
                 document.getElementById('paso2').style.display = 'block';
+                document.getElementById('inputCodigo').focus();
+
+                codigoRecibido = data.codigo;
 
             } catch (error) {
                 mensajeError.textContent = 'Error de conexión. Intente de nuevo.';
@@ -254,6 +236,37 @@
             }
         });
 
+        // ── Paso 2: verificar código ──
+        document.getElementById('btnVerificar').addEventListener('click', async () => {
+            const correo       = document.getElementById('inputCorreo').value.trim();
+            const codigo       = document.getElementById('inputCodigo').value.trim();
+            const mensajeError = document.getElementById('mensajeError2');
+
+            mensajeError.style.display = 'none';
+
+            if (!codigo) {
+                mensajeError.textContent = 'Por favor, ingrese el código.';
+                mensajeError.style.display = 'block';
+                return;
+            }
+
+            if (codigo != codigoRecibido) {
+                mensajeError.textContent = 'Código incorrecto';
+                mensajeError.style.display = 'block';
+                return;
+            }
+
+            try {
+                // redirigir a pantalla de nueva contraseña, pasando el token
+                window.location.href = BASE + '/nuevaContrasena?token=' + encodeURIComponent(data.token);
+
+            } catch (error) {
+                mensajeError.textContent = 'Error de conexión. Intente de nuevo.';
+                mensajeError.style.display = 'block';
+            }
+        });
+
+        // ── Reenviar código ──
         document.getElementById('btnReenviar').addEventListener('click', async () => {
             const correo = document.getElementById('inputCorreo').value.trim();
             const btn    = document.getElementById('btnReenviar');
@@ -262,23 +275,52 @@
                 await fetch(BASE + '/api/auth/recCont', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ correo })
+                    body: JSON.stringify({ codigo })
                 });
-            } catch (_) {}
 
-            btn.textContent = 'Reenviado';
-            btn.style.color = '#28a745';
-            btn.disabled = true;
-            setTimeout(() => {
-                btn.textContent = 'Reenvíe el correo';
-                btn.style.color = '#316AFB';
-                btn.disabled = false;
-            }, 3000);
+                const data = await response.json().catch(() => null);
+
+                if (!response.ok) {
+                    const msg = data && data.error ? data.error : 'No se pudo enviar el código.';
+                    mensajeError.textContent = msg;
+                    mensajeError.style.display = 'block';
+                    return;
+                }
+
+                btn.textContent = 'Reenviado';
+                btn.style.color = '#28a745';
+                btn.disabled = true;
+                setTimeout(() => {
+                    btn.textContent = 'reenvíe el código';
+                    btn.style.color = '#316AFB';
+                    btn.disabled = false;
+                }, 3000);
+
+                codigoRecibido = data.codigo;
+
+            } catch (error) {
+                mensajeError.textContent = 'Error de conexión. Intente de nuevo.';
+                mensajeError.style.display = 'block';
+            }
         });
 
-        // permitir Enter para enviar
+        // ── Volver al paso 1 ──
+        document.getElementById('btnVolverPaso1').addEventListener('click', e => {
+            e.preventDefault();
+            document.getElementById('mensajeError2').style.display = 'none';
+            document.getElementById('inputCodigo').value = '';
+            document.getElementById('paso2').style.display = 'none';
+            document.getElementById('paso1').style.display = 'block';
+        });
+
+        // Enter en paso 1
         document.getElementById('inputCorreo').addEventListener('keydown', e => {
             if (e.key === 'Enter') document.getElementById('btnEnviar').click();
+        });
+
+        // Enter en paso 2
+        document.getElementById('inputCodigo').addEventListener('keydown', e => {
+            if (e.key === 'Enter') document.getElementById('btnVerificar').click();
         });
     </script>
 </body>
