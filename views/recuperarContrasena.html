@@ -255,7 +255,7 @@
                   return;
                 }
                 
-                window.location.href = BASE + '/nuevaContrasena';
+                window.location.href = BASE + '/nuevaContrasena?token=' + encodeURIComponent(data.token);
 
             } catch (error) {
                 mensajeError.textContent = 'Error de conexión. Intente de nuevo.';
