@@ -1,79 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar contraseña</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
-<div style="min-height:420px; background-color:#4B3B8C; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:32px 16px; gap:12px; border-radius:var(--border-radius-lg);">
+        body {
+            min-height: 100vh;
+            background-color: #4B3B8C;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: sans-serif;
+            gap: 12px;
+        }
 
-  <div id="paso1" style="background:#EADDFF; border-radius:16px; width:380px; overflow:hidden;">
-    <div style="background:#6750A4; text-align:center; padding:14px 0;">
-      <p style="color:#fff; font-size:1.05rem; font-weight:500; margin:0;">Recuperar contraseña</p>
+        .tarjeta {
+            background-color: #EADDFF;
+            border-radius: 16px;
+            width: 380px;
+            overflow: hidden;
+        }
+
+        .tarjeta-header {
+            background-color: #6750A4;
+            text-align: center;
+            padding: 14px 0;
+        }
+
+        .tarjeta-header h1 {
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        /* ── Paso 1: ingresar correo ── */
+        .tarjeta-cuerpo {
+            padding: 24px 28px 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .tarjeta-cuerpo .descripcion {
+            font-size: 0.82rem;
+            color: #49454F;
+        }
+
+        .campo label {
+            display: block;
+            font-size: 0.85rem;
+            color: #1C1B1F;
+            margin-bottom: 4px;
+        }
+
+        .campo input {
+            width: 100%;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            background-color: #fff;
+            font-size: 0.9rem;
+            color: #1C1B1F;
+            outline: none;
+        }
+
+        .campo input:focus {
+            box-shadow: 0 0 0 2px #6750A4;
+        }
+
+        .mensaje-error {
+            display: none;
+            color: #FF383C;
+            font-size: 0.78rem;
+            text-align: center;
+            padding: 0 28px 10px;
+        }
+
+        .tarjeta-pie {
+            padding: 4px 28px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .enlace-volver {
+            font-size: 0.78rem;
+            color: #316AFB;
+            text-decoration: none;
+        }
+
+        .enlace-volver:hover { text-decoration: underline; }
+
+        .btn-enviar {
+            background-color: #34C759;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 28px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .btn-enviar:hover { background-color: #28a745; }
+
+        /* ── Paso 2: confirmación ── */
+        .tarjeta-confirmacion {
+            padding: 28px 28px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            text-align: center;
+        }
+
+        .icono-correo {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background-color: #6750A4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            color: #fff;
+        }
+
+        .tarjeta-confirmacion .mensaje-principal {
+            font-size: 0.9rem;
+            color: #1C1B1F;
+            line-height: 1.5;
+        }
+
+        .tarjeta-confirmacion .mensaje-spam {
+            font-size: 0.78rem;
+            color: #49454F;
+        }
+
+        .btn-reenviar {
+            background: transparent;
+            color: #316AFB;
+            border: none;
+            font-size: 0.82rem;
+            cursor: pointer;
+            padding: 0;
+            text-decoration: underline;
+        }
+
+        .tarjeta-pie-centro {
+            padding: 0 28px 20px;
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Paso 1: ingresar correo -->
+    <div class="tarjeta" id="paso1">
+        <div class="tarjeta-header">
+            <h1>Recuperar contraseña</h1>
+        </div>
+
+        <div class="tarjeta-cuerpo">
+            <p class="descripcion">Ingrese su correo y le enviaremos un enlace para restablecer su contraseña.</p>
+            <div class="campo">
+                <label for="inputCorreo">Correo</label>
+                <input type="email" id="inputCorreo" name="correo" autocomplete="email" placeholder="ejemplo@correo.com">
+            </div>
+        </div>
+
+        <p class="mensaje-error" id="mensajeError"></p>
+
+        <div class="tarjeta-pie">
+            <a href="login" class="enlace-volver">← Volver al inicio</a>
+            <button type="button" class="btn-enviar" id="btnEnviar">Enviar enlace</button>
+        </div>
     </div>
-    <div style="padding:24px 28px 8px; display:flex; flex-direction:column; gap:6px;">
-      <p style="font-size:0.82rem; color:#49454F; margin:0 0 8px;">Ingrese su correo y le enviaremos un enlace para restablecer su contraseña.</p>
-      <label style="font-size:0.85rem; color:#1C1B1F; display:block; margin-bottom:4px;">Correo</label>
-      <input id="inputCorreo" type="email" placeholder="ejemplo@correo.com" style="width:100%; padding:8px 12px; border:none; border-radius:8px; background:#fff; font-size:0.9rem; color:#1C1B1F; outline:none; box-sizing:border-box;">
+
+    <!-- Paso 2: confirmación de envío -->
+    <div class="tarjeta" id="paso2" style="display:none;">
+        <div class="tarjeta-header">
+            <h1>Revise su correo</h1>
+        </div>
+
+        <div class="tarjeta-confirmacion">
+            <div class="icono-correo">✉</div>
+            <p class="mensaje-principal">
+                Se envió un enlace a <strong id="correoMostrado"></strong>.
+                Revise su bandeja de entrada y siga las instrucciones.
+            </p>
+            <p class="mensaje-spam">¿No llegó? Revise su carpeta de spam o</p>
+            <button type="button" class="btn-reenviar" id="btnReenviar">reenvíe el correo</button>
+        </div>
+
+        <div class="tarjeta-pie-centro">
+            <a href="login" class="enlace-volver">← Volver al inicio de sesión</a>
+        </div>
     </div>
-    <p id="errorMsg" style="display:none; color:#FF383C; font-size:0.78rem; text-align:center; padding:6px 28px 0; margin:0;"></p>
-    <div style="padding:16px 28px 20px; display:flex; justify-content:space-between; align-items:center;">
-      <a href="#" onclick="return false;" style="font-size:0.78rem; color:#316AFB; text-decoration:none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">← Volver al inicio</a>
-      <button id="btnEnviar" onclick="enviarEnlace()" style="background:#34C759; color:#fff; border:none; border-radius:20px; padding:10px 28px; font-size:0.9rem; cursor:pointer;" onmouseover="this.style.background='#28a745'" onmouseout="this.style.background='#34C759'">Enviar enlace</button>
-    </div>
-  </div>
 
-  <div id="paso2" style="display:none; background:#EADDFF; border-radius:16px; width:380px; overflow:hidden;">
-    <div style="background:#6750A4; text-align:center; padding:14px 0;">
-      <p style="color:#fff; font-size:1.05rem; font-weight:500; margin:0;">Revise su correo</p>
-    </div>
-    <div style="padding:28px 28px 24px; display:flex; flex-direction:column; align-items:center; gap:14px; text-align:center;">
-      <div style="width:56px; height:56px; border-radius:50%; background:#6750A4; display:flex; align-items:center; justify-content:center;">
-        <i class="ti ti-mail" style="font-size:26px; color:#fff;" aria-hidden="true"></i>
-      </div>
-      <p style="font-size:0.9rem; color:#1C1B1F; margin:0; line-height:1.5;">Se envió un enlace a <strong id="correoMostrado" style="font-weight:500;"></strong>. Revise su bandeja de entrada y siga las instrucciones.</p>
-      <p style="font-size:0.78rem; color:#49454F; margin:0;">¿No llegó? Revise su carpeta de spam o</p>
-      <button onclick="reenviar()" style="background:transparent; color:#316AFB; border:none; font-size:0.82rem; cursor:pointer; padding:0; text-decoration:underline;">reenvíe el correo</button>
-    </div>
-    <div style="padding:0 28px 20px; display:flex; justify-content:center;">
-      <a href="#" onclick="volver(); return false;" style="font-size:0.82rem; color:#316AFB; text-decoration:none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">← Volver al inicio de sesión</a>
-    </div>
-  </div>
+    <script src="js/config.js"></script>
+    <script>
+        const BASE = window.API_BASE;
 
-</div>
+        function validarCorreo(correo) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
+        }
 
-<script>
-function validarCorreo(c) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(c); }
+        document.getElementById('btnEnviar').addEventListener('click', async () => {
+            const correo       = document.getElementById('inputCorreo').value.trim();
+            const mensajeError = document.getElementById('mensajeError');
 
-function enviarEnlace() {
-  const correo = document.getElementById('inputCorreo').value.trim();
-  const err = document.getElementById('errorMsg');
-  err.style.display = 'none';
-  if (!correo) {
-    err.textContent = 'Por favor, ingrese su correo.';
-    err.style.display = 'block';
-    return;
-  }
-  if (!validarCorreo(correo)) {
-    err.textContent = 'Ingrese un correo válido.';
-    err.style.display = 'block';
-    return;
-  }
-  document.getElementById('correoMostrado').textContent = correo;
-  document.getElementById('paso1').style.display = 'none';
-  document.getElementById('paso2').style.display = 'block';
-}
+            mensajeError.style.display = 'none';
 
-function reenviar() {
-  const btn = event.target;
-  btn.textContent = '✓ Reenviado';
-  btn.style.color = '#28a745';
-  btn.disabled = true;
-  setTimeout(() => { btn.textContent = 'reenvíe el correo'; btn.style.color = '#316AFB'; btn.disabled = false; }, 3000);
-}
+            if (!correo) {
+                mensajeError.textContent = 'Por favor, ingrese su correo.';
+                mensajeError.style.display = 'block';
+                return;
+            }
 
-function volver() {
-  document.getElementById('paso2').style.display = 'none';
-  document.getElementById('paso1').style.display = 'block';
-  document.getElementById('inputCorreo').value = '';
-  document.getElementById('errorMsg').style.display = 'none';
-}
+            if (!validarCorreo(correo)) {
+                mensajeError.textContent = 'Ingrese un correo válido.';
+                mensajeError.style.display = 'block';
+                return;
+            }
 
-document.getElementById('inputCorreo').addEventListener('keydown', e => {
-  if (e.key === 'Enter') enviarEnlace();
-});
-</script>
+            try {
+                const response = await fetch(BASE + '/api/auth/recuperar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ correo })
+                });
+
+                const data = await response.json().catch(() => null);
+
+                if (!response.ok) {
+                    const msg = data && data.error ? data.error : 'No se pudo enviar el enlace.';
+                    mensajeError.textContent = msg;
+                    mensajeError.style.display = 'block';
+                    return;
+                }
+
+                document.getElementById('correoMostrado').textContent = correo;
+                document.getElementById('paso1').style.display = 'none';
+                document.getElementById('paso2').style.display = 'block';
+
+            } catch (error) {
+                mensajeError.textContent = 'Error de conexión. Intente de nuevo.';
+                mensajeError.style.display = 'block';
+            }
+        });
+
+        document.getElementById('btnReenviar').addEventListener('click', async () => {
+            const correo = document.getElementById('inputCorreo').value.trim();
+            const btn    = document.getElementById('btnReenviar');
+
+            try {
+                await fetch(BASE + '/api/auth/recuperar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ correo })
+                });
+            } catch (_) { /* silencioso */ }
+
+            btn.textContent = '✓ Reenviado';
+            btn.style.color = '#28a745';
+            btn.disabled = true;
+            setTimeout(() => {
+                btn.textContent = 'reenvíe el correo';
+                btn.style.color = '#316AFB';
+                btn.disabled = false;
+            }, 3000);
+        });
+
+        // permitir Enter para enviar
+        document.getElementById('inputCorreo').addEventListener('keydown', e => {
+            if (e.key === 'Enter') document.getElementById('btnEnviar').click();
+        });
+    </script>
+</body>
+</html>
