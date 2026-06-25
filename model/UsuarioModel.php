@@ -58,21 +58,21 @@ class UsuarioModel
     public function cambiarNombre(string $idUsuario, string $nuevoNombre): bool
     {
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $stmt = $this->pdo->prepare("UPDATE Usuario SET nombre = ? WHERE idUsuario = ?");
+        $stmt = $this->pdo->prepare("UPDATE Usuario SET nombre = ? WHERE idUsuario = ?; COMMIT");
         return $stmt->execute([$nuevoNombre, $idUsuario]);
     }
 
     public function cambiarCorreo(string $idUsuario, string $nuevoCorreo): bool
     {
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $stmt = $this->pdo->prepare("UPDATE Usuario SET correo = ? WHERE idUsuario = ?");
+        $stmt = $this->pdo->prepare("UPDATE Usuario SET correo = ? WHERE idUsuario = ?; COMMIT");
         return $stmt->execute([$nuevoCorreo, $idUsuario]);
     }
 
     public function cambiarContrasena(string $correo, string $nuevaContrasena): bool
     {
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $stmt = $this->pdo->prepare("UPDATE Usuario SET contrasena = ? WHERE correo = ?");
+        $stmt = $this->pdo->prepare("UPDATE Usuario SET contrasena = ? WHERE correo = ?; COMMIT");
         return $stmt->execute([$nuevaContrasena, $correo]);
     }
 }
