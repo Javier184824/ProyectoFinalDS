@@ -253,11 +253,11 @@
                     headers: { 'Content-Type': 'application/json' }
                 });
 
-                const data = await response.json().catch(() => null);
+                const data = await response.json();
 
                 if (!response.ok) {
                   const msg = data && data.error ? data.error : 'No se pudo enviar el código.';
-                  mensajeError.textContent = data.codigo;
+                  mensajeError.textContent = msg;
                   mensajeError.style.display = 'block';
                   return;
                 }
