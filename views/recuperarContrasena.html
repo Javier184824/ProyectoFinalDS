@@ -229,7 +229,7 @@
             }
 
             try {
-                const response = await fetch(BASE + '/api/auth/recuperar', {
+                const response = await fetch(BASE + '/api/auth/recCont', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ correo })
@@ -259,18 +259,18 @@
             const btn    = document.getElementById('btnReenviar');
 
             try {
-                await fetch(BASE + '/api/auth/recuperar', {
+                await fetch(BASE + '/api/auth/recCont', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ correo })
                 });
-            } catch (_) { /* silencioso */ }
+            } catch (_) {}
 
-            btn.textContent = '✓ Reenviado';
+            btn.textContent = 'Reenviado';
             btn.style.color = '#28a745';
             btn.disabled = true;
             setTimeout(() => {
-                btn.textContent = 'reenvíe el correo';
+                btn.textContent = 'Reenvíe el correo';
                 btn.style.color = '#316AFB';
                 btn.disabled = false;
             }, 3000);
