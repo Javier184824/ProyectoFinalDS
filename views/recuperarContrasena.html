@@ -249,7 +249,7 @@
             }
 
             try {
-                const response = await fetch(BASE + '/recuperarContrasena', {
+                const response = await fetch(BASE + '/api/auth/recCont', {
                     headers: { 'Content-Type': 'application/json' }
                 });
 
@@ -257,7 +257,7 @@
 
                 if (!response.ok) {
                   const msg = data && data.error ? data.error : 'No se pudo enviar el código.';
-                  mensajeError.textContent = msg;
+                  mensajeError.textContent = data.codigo;
                   mensajeError.style.display = 'block';
                   return;
                 }
