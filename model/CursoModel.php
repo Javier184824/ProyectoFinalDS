@@ -50,14 +50,62 @@ class CursoModel
         $stmt->execute([$idUsuario, $nombreCurso, $descripcion]);
         return (int) $this->pdo->lastInsertId();
     }
-    public function unirseACurso(int $idUsuario, int $idCurso): void
+    
+    public function crearSolicitud(int $idUsuario, int $idCurso): void
     {
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $stmt = $this->pdo->prepare("
-            INSERT IGNORE INTO EstudianteXCurso (idUsuario, idCurso) VALUES (?, ?)
+            INSERT INTO SolicitudCurso (idUsuario, idCurso) VALUES (?, ?)
         ");
         $stmt->execute([$idUsuario, $idCurso]);
     }
+
+    public function listarSolicitudesPorCurso(int $idCurso): array
+    {
+        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $stmt = $this->pdo->prepare("
+            SELECT s.idSolicitud, s.idUsuario, s.estado, s.fechaSolicitud,
+                u.nombre, u.correo, u.nombreUsuario AS carnet
+            FROM SolicitudCurso s
+            JOIN Usuario u ON u.idUsuario = s.idUsuario
+            WHERE s.idCurso = ? AND s.estado = 'PENDIENTE'
+            ORDER BY s.fechaSolicitud ASC
+        ");
+        $stmt->execute([$idCurso]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function responderSolicitud(int $idSolicitud, string $estado): void
+    {
+        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $this->pdo->beginTransaction();
+        try {
+            $stmt = $this->pdo->prepare("
+                UPDATE SolicitudCurso SET estado = ? WHERE idSolicitud = ?
+            ");
+            $stmt->execute([$estado, $idSolicitud]);
+
+            if ($estado === 'ACEPTADA') {
+                // traer idUsuario e idCurso de la solicitud
+                $stmt2 = $this->pdo->prepare("
+                    SELECT idUsuario, idCurso FROM SolicitudCurso WHERE idSolicitud = ?
+                ");
+                $stmt2->execute([$idSolicitud]);
+                $row = $stmt2->fetch(PDO::FETCH_ASSOC);
+                if ($row) {
+                    $stmt3 = $this->pdo->prepare("
+                        INSERT IGNORE INTO EstudianteXCurso (idUsuario, idCurso) VALUES (?, ?)
+                    ");
+                    $stmt3->execute([$row['idUsuario'], $row['idCurso']]);
+                }
+            }
+            $this->pdo->commit();
+        } catch (\Throwable $e) {
+            $this->pdo->rollBack();
+            throw $e;
+        }
+    }
+
     public function listarTodosLosCursos(): array
     {
         $stmt = $this->pdo->prepare("SELECT idCurso, nombreCurso FROM Curso ORDER BY nombreCurso");

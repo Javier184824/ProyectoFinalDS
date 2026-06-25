@@ -259,7 +259,7 @@
         <section id="seccionCursos">
             <div class="barra-titulo">
                 <h2>Mis cursos</h2>
-                <button class="btn-nuevo" id="btnUnirse">+ Unirse a curso</button>
+                <button class="btn-nuevo" id="btnUnirse">+ Solicitar curso</button>
             </div>
 
             <div class="lista-cursos" id="listaCursos">
@@ -279,7 +279,7 @@
     <!-- modal para unirse a un curso -->
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal">
-            <div class="modal-header"><h3>Unirse a un curso</h3></div>
+            <div class="modal-header"><h3>Solicitar unirse a un curso</h3></div>
             <div class="modal-cuerpo">
                 <div>
                     <label for="selectCursoUnirse">Seleccione el curso</label>
@@ -291,7 +291,7 @@
             </div>
             <div class="modal-pie">
                 <button class="btn-cancelar-modal" id="btnCancelarModal">Cancelar</button>
-                <button class="btn-confirmar-modal" id="btnConfirmarUnirse">Unirse</button>
+                <button class="btn-confirmar-modal" id="btnConfirmarUnirse">Enviar solicitud</button>
             </div>
         </div>
     </div>
@@ -483,7 +483,7 @@
             }
 
             try {
-                const res = await fetch(BASE + '/api/cursos/unirse', {
+                const res = await fetch(BASE + '/api/cursos/solicitar', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ idCurso: parseInt(idCurso, 10) })
@@ -498,7 +498,7 @@
                 }
 
                 overlay.classList.remove('visible');
-                cargarCursos(); // refrescar lista
+                alert('Solicitud enviada. El profesor debe aceptarla para que el curso aparezca en tu lista.');
 
             } catch {
                 modalError.textContent   = 'Error de conexión. Intente de nuevo.';

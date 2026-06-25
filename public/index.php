@@ -127,8 +127,16 @@ $router->add('GET', '/api/cursos/{idCurso}/estudiantes', function (string $idCur
     (new CursoController())->listarEstudiantes((int) $idCurso);
 });
 
-$router->add('POST', '/api/cursos/unirse', function () {
-    (new CursoController())->unirseACurso();
+$router->add('POST', '/api/cursos/solicitar', function () {
+    (new CursoController())->solicitarUnirse();
+});
+
+$router->add('GET', '/api/cursos/{idCurso}/solicitudes', function (string $idCurso) {
+    (new CursoController())->listarSolicitudes((int) $idCurso);
+});
+
+$router->add('PUT', '/api/solicitudes/{idSolicitud}', function (string $idSolicitud) {
+    (new CursoController())->responderSolicitud((int) $idSolicitud);
 });
 
 $router->add('GET', '/api/tareas', function () {

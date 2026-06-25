@@ -282,13 +282,24 @@
                 const nombre = document.createElement('span');
                 nombre.textContent = curso.nombreCurso;
 
-                const btn = document.createElement('button');
-                btn.className = 'btn-ver';
-                btn.textContent = 'Ver tareas';
-                btn.onclick = () => cargarTareas(curso);
+                const acciones = document.createElement('div');
+                acciones.className = 'acciones-tarjeta';
+
+                const btnTareas = document.createElement('button');
+                btnTareas.className = 'btn-ver';
+                btnTareas.textContent = 'Ver tareas';
+                btnTareas.onclick = () => cargarTareas(curso);
+
+                const btnSolicitudes = document.createElement('button');
+                btnSolicitudes.className = 'btn-editar';
+                btnSolicitudes.textContent = 'Solicitudes';
+                btnSolicitudes.onclick = () => cargarSolicitudes(curso);
+
+                acciones.appendChild(btnTareas);
+                acciones.appendChild(btnSolicitudes);
 
                 tarjeta.appendChild(nombre);
-                tarjeta.appendChild(btn);
+                tarjeta.appendChild(acciones);
                 lista.appendChild(tarjeta);
             });
         }
@@ -420,6 +431,92 @@
             sessionStorage.removeItem('usuario');
             window.location.href = BASE + '/login';
         });
+
+        async function cargarSolicitudes(curso) {
+            const panel = document.getElementById('panelTareas');
+            const lista  = document.getElementById('listaTareas');
+            panel.style.display = 'block';
+            document.getElementById('tituloTareas').textContent = 'Solicitudes para: ' + curso.nombreCurso;
+            lista.innerHTML = '<p class="cargando">Cargando solicitudes...</p>';
+
+            try {
+                const res = await fetch(BASE + '/api/cursos/' + curso.idCurso + '/solicitudes');
+                const data = await res.json().catch(() => null);
+
+                if (!res.ok || !data) {
+                    lista.innerHTML = '<p class="sin-tareas">Error al cargar solicitudes.</p>';
+                    return;
+                }
+
+                const solicitudes = data.solicitudes || [];
+                lista.innerHTML = '';
+
+                if (solicitudes.length === 0) {
+                    lista.innerHTML = '<p class="sin-tareas">No hay solicitudes pendientes para este curso.</p>';
+                    return;
+                }
+
+                solicitudes.forEach(s => {
+                    const tarjeta = document.createElement('div');
+                    tarjeta.className = 'tarjeta-tarea';
+
+                    const info = document.createElement('div');
+                    info.style.cssText = 'display:flex;flex-direction:column;gap:2px;flex:1';
+
+                    const nombre = document.createElement('span');
+                    nombre.textContent = s.nombre;
+
+                    const meta = document.createElement('span');
+                    meta.style.cssText = 'font-size:0.75rem;color:#575757';
+                    meta.textContent = (s.carnet || '') + '  ·  ' + (s.correo || '') + '  ·  ' +
+                        new Date(s.fechaSolicitud).toLocaleDateString('es-CR');
+
+                    info.appendChild(nombre);
+                    info.appendChild(meta);
+
+                    const acciones = document.createElement('div');
+                    acciones.className = 'acciones-tarjeta';
+
+                    const btnAceptar = document.createElement('button');
+                    btnAceptar.className = 'btn-ver';
+                    btnAceptar.textContent = 'Aceptar';
+                    btnAceptar.onclick = () => responderSolicitud(s.idSolicitud, 'ACEPTADA', tarjeta);
+
+                    const btnRechazar = document.createElement('button');
+                    btnRechazar.style.cssText = 'background-color:#FF383C;color:#fff;border:none;border-radius:20px;padding:7px 16px;font-size:0.82rem;cursor:pointer';
+                    btnRechazar.textContent = 'Rechazar';
+                    btnRechazar.onclick = () => responderSolicitud(s.idSolicitud, 'RECHAZADA', tarjeta);
+
+                    acciones.appendChild(btnAceptar);
+                    acciones.appendChild(btnRechazar);
+
+                    tarjeta.appendChild(info);
+                    tarjeta.appendChild(acciones);
+                    lista.appendChild(tarjeta);
+                });
+
+            } catch {
+                lista.innerHTML = '<p class="sin-tareas">Error de conexion.</p>';
+            }
+        }
+
+        async function responderSolicitud(idSolicitud, estado, tarjetaEl) {
+            try {
+                const res = await fetch(BASE + '/api/solicitudes/' + idSolicitud, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ estado })
+                });
+
+                if (res.ok) {
+                    tarjetaEl.remove();
+                } else {
+                    alert('Error al procesar la solicitud.');
+                }
+            } catch {
+                alert('Error de conexion.');
+            }
+        }
 
         // carga inicial
         cargarCursos();
