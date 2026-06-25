@@ -341,7 +341,7 @@ $router->add('GET', '/recuperarContrasena', function () {
 $router->add('GET', '/nuevaContrasena', function () {
     // Para el HTML desactivamos el Content-Type JSON que pusimos arriba
     header('Content-Type: text/html; charset=utf-8');
-    require_once __DIR__ . '/../views/recuperarContrasena.html';
+    require_once __DIR__ . '/../views/nuevaContrasena.html';
     exit;
 });
 
