@@ -210,7 +210,7 @@
                 const response = await fetch(BASE + '/api/auth/recCont', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ correo , codigo })
+                    body: JSON.stringify({ correo })
                 });
 
                 const data = await response.json().catch(() => null);
@@ -227,7 +227,7 @@
                 document.getElementById('paso2').style.display = 'block';
                 document.getElementById('inputCodigo').focus();
 
-                codigoRecibido = data.codigo;
+                //codigoRecibido = data.codigo;
 
             } catch (error) {
                 mensajeError.textContent = 'Error de conexión. Intente de nuevo.';
@@ -274,7 +274,7 @@
                 await fetch(BASE + '/api/auth/recCont', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ correo , codigo })
+                    body: JSON.stringify({ correo })
                 });
 
                 const data = await response.json().catch(() => null);
@@ -295,7 +295,7 @@
                     btn.disabled = false;
                 }, 3000);
 
-                codigoRecibido = data.codigo;
+                //codigoRecibido = data.codigo;
 
             } catch (error) {
                 mensajeError.textContent = 'Error de conexión. Intente de nuevo.';
