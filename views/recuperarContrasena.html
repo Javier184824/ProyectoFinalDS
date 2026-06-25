@@ -181,6 +181,7 @@
     <script src="js/config.js"></script>
     <script>
         const BASE = window.API_BASE;
+        let codigoRecibido = "0"
 
         function validarCorreo(correo) {
             return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
@@ -204,8 +205,6 @@
                 mensajeError.style.display = 'block';
                 return;
             }
-
-            let codigoRecibido = "0"
 
             try {
                 const response = await fetch(BASE + '/api/auth/recCont', {
