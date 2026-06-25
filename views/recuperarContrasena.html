@@ -262,13 +262,13 @@
                   return;
                 }
 
-                //if (codigo != data.codigo) {
-                //  mensajeError.textContent = 'Código incorrecto';
-                //  mensajeError.style.display = 'block';
-                //  return;
-                //}
-                //
-                //window.location.href = BASE + '/nuevaContrasena?token=' + encodeURIComponent(data.token);
+                if (codigo != data.codigo) {
+                  mensajeError.textContent = 'Código incorrecto';
+                  mensajeError.style.display = 'block';
+                  return;
+                }
+                
+                window.location.href = BASE + '/nuevaContrasena?token=' + encodeURIComponent(data.token);
 
             } catch (error) {
                 mensajeError.textContent = 'Error de conexión. Intente de nuevo.';
