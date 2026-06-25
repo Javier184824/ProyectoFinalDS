@@ -124,7 +124,8 @@ class CursoController
     }
 
     // Agregar después del método crearCurso()
-    public function unirseACurso(): void
+    
+    public function solicitarUnirse(): void
     {
         if (session_status() === PHP_SESSION_NONE) session_start();
 
@@ -138,7 +139,7 @@ class CursoController
 
         if ($session['rol'] !== 'ESTUDIANTE') {
             http_response_code(403);
-            echo json_encode(['success' => false, 'error' => 'Solo estudiantes pueden unirse a cursos']);
+            echo json_encode(['success' => false, 'error' => 'Solo estudiantes pueden solicitar unirse']);
             exit;
         }
 
@@ -151,14 +152,82 @@ class CursoController
         }
 
         try {
-            $this->cursoModel->unirseACurso((int) $session['idUsuario'], (int) $data['idCurso']);
+            $this->cursoModel->crearSolicitud((int) $session['idUsuario'], (int) $data['idCurso']);
+            http_response_code(201);
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['success' => true, 'estado' => 'solicitud enviada']);
+            exit;
+        } catch (\PDOException $e) {
+            // código 23000 = duplicate entry (ya existe la solicitud)
+            if ($e->getCode() === '23000') {
+                http_response_code(409);
+                echo json_encode(['success' => false, 'error' => 'Ya tienes una solicitud pendiente para este curso']);
+                exit;
+            }
+            http_response_code(500);
+            echo json_encode(['success' => false, 'error' => 'Error al enviar la solicitud']);
+            exit;
+        }
+    }
+
+    public function listarSolicitudes(int $idCurso): void
+    {
+        if (session_status() === PHP_SESSION_NONE) session_start();
+
+        if (!isset($_SESSION['login_response'])) {
+            http_response_code(401);
+            echo json_encode(['success' => false, 'error' => 'Sesión no encontrada']);
+            exit;
+        }
+
+        try {
+            $solicitudes = $this->cursoModel->listarSolicitudesPorCurso($idCurso);
             http_response_code(200);
             header('Content-Type: application/json; charset=utf-8');
-            echo json_encode(['success' => true, 'estado' => 'unido al curso']);
+            echo json_encode(['success' => true, 'solicitudes' => $solicitudes]);
             exit;
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             http_response_code(500);
-            echo json_encode(['success' => false, 'error' => 'Error al unirse al curso']);
+            echo json_encode(['success' => false, 'error' => 'Error al listar solicitudes']);
+            exit;
+        }
+    }
+
+    public function responderSolicitud(int $idSolicitud): void
+    {
+        if (session_status() === PHP_SESSION_NONE) session_start();
+
+        if (!isset($_SESSION['login_response'])) {
+            http_response_code(401);
+            echo json_encode(['success' => false, 'error' => 'Sesión no encontrada']);
+            exit;
+        }
+
+        $session = $_SESSION['login_response'];
+
+        if ($session['rol'] !== 'PROFESOR') {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'error' => 'Solo profesores pueden responder solicitudes']);
+            exit;
+        }
+
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        if (empty($data['estado']) || !in_array($data['estado'], ['ACEPTADA', 'RECHAZADA'], true)) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'estado debe ser ACEPTADA o RECHAZADA']);
+            exit;
+        }
+
+        try {
+            $this->cursoModel->responderSolicitud($idSolicitud, $data['estado']);
+            http_response_code(200);
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['success' => true, 'estado' => 'solicitud procesada']);
+            exit;
+        } catch (\PDOException $e) {
+            http_response_code(500);
+            echo json_encode(['success' => false, 'error' => 'Error al procesar la solicitud']);
             exit;
         }
     }
