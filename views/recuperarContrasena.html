@@ -181,7 +181,9 @@
     <script src="js/config.js"></script>
     <script>
         const BASE = window.API_BASE;
-        let codigoRecibido = ""
+        let tokenGenerado = "";
+        let codigoRecibido = "";
+        let correoAEnviar = "";
 
         function validarCorreo(correo) {
             return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
@@ -222,12 +224,15 @@
                     return;
                 }
 
-                codigoRecibido = data.codigo
+                tokenGenerado = data.token;
+                codigoRecibido = data.codigo;
+                correoAEnviar = data.correo;
 
                 document.getElementById('correoMostrado').textContent = correo;
                 document.getElementById('paso1').style.display = 'none';
                 document.getElementById('paso2').style.display = 'block';
                 document.getElementById('inputCodigo').focus();
+
             } catch (error) {
                 mensajeError.textContent = 'Error de conexión. Intente de nuevo.';
                 mensajeError.style.display = 'block';
@@ -255,7 +260,7 @@
                   return;
                 }
                 
-                window.location.href = BASE + '/nuevaContrasena?token=' + encodeURIComponent(data.token) + '&correo=' + encodeURIComponent(data.correo);
+                window.location.href = BASE + '/nuevaContrasena?token=' + encodeURIComponent(tokenGenerado) + '&correo=' + encodeURIComponent(correoAEnviar);
 
             } catch (error) {
                 mensajeError.textContent = 'Error de conexión. Intente de nuevo.';
